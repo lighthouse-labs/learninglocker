@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { compose, withContext, lifecycle } from 'recompose';
 import { Card, CardText } from 'react-toolbox/lib/card';
 import {
@@ -14,8 +15,10 @@ import Helmet from 'react-helmet';
 import Link from 'ui/containers/Link';
 import FullPageBackground from 'ui/components/FullPageBackground';
 import { IN_PROGRESS } from 'ui/utils/constants';
+import styles from './styles.css';
 
 const enhance = compose(
+  withStyles(styles),
   withContext({
     router: PropTypes.any,
   }, () => ({})),
@@ -35,14 +38,6 @@ const enhance = compose(
   })
 );
 
-/**
- * @param oAuthLoginStart - {@see reduxOAuthLoginStart}
- * @param loginStart - {@see reduxLoginStart}
- * @param loginRequestState - {@see loginRequestStateSelector}
- * @param loginError - {@see loginErrorSelector}
- * @param googleAuth - {@see getAppDataSelector}
- * @returns {*}
- */
 const render = ({
   oAuthLoginStart,
   loginStart,
@@ -60,11 +55,8 @@ const render = ({
     if (email && password) loginStart({ username: email, password }).catch(() => { });
   };
 
-  const onClickOAuthLogin = (event) => {
-    if (event) {
-      event.preventDefault();
-    }
-
+  const onClickOAuthLogin = (e) => {
+    if (e) e.preventDefault();
     oAuthLoginStart('google').catch(() => { });
   };
 
@@ -74,7 +66,7 @@ const render = ({
 
   return (
     <FullPageBackground width={400}>
-      <div>
+      <div className={styles.loginWrapper}>
         <Helmet title="- Login" />
         <h3>Welcome</h3>
         <form>
@@ -103,25 +95,20 @@ const render = ({
             </CardText>
           </Card>
           {!inProgress &&
-            <div>
-              <div style={{ marginTop: 20, textAlign: 'center' }}>
-                <button
-                  style={{ margin: '0 5px' }}
-                  type="submit"
-                  className="btn btn-primary"
-                  onClick={onClickLogin} >
+            <div className={styles.buttons}>
+              <div className={styles.loginButtons}>
+                <button type="submit" className="btn btn-primary" onClick={onClickLogin} >
                   <i className="ion-log-in" /> Login
-                </button>
+              </button>
                 {googleAuthEnabled &&
                   <button
-                    style={{ margin: '0 5px' }}
                     onClick={onClickOAuthLogin}
-                    className="btn btn-primary">
+                    className={`btn btn-primary ${styles.last}`} >
                     <i className="icon ion-social-googleplus" /> Google
                 </button>
                 }
               </div>
-              <div style={{ textAlign: 'center', marginTop: 10 }}>
+              <div className={styles.otherButtons}>
                 <Link className="btn btn-primary" routeName={'forgot'}>
                   <i className="ion-key" /> Reset password
               </Link>

@@ -1,32 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import classNames from 'classnames';
 import Dropdown from '../Dropdown/Dropdown';
-
-const StyledSelect = styled.div`
-  position: relative;
-  cursor: pointer;
-
-  &:focus {
-    outline: 0;
-  }
-`;
-
-const Content = styled.div`
-  display: flex;
-  flex-direction: row;
-`;
-
-const Value = styled.div`
-  justify-content: flex-start;
-  flex-grow: 1;
-`;
-
-const Indicator = styled.div`
-  margin-left: 2px;
-  justify-content: flex-end;
-  width: 10px;
-`;
+import styles from './styles.css';
 
 class Select extends Component {
   static propTypes = {
@@ -47,29 +24,32 @@ class Select extends Component {
     this.setState({ focused: false });
   }
 
-  render = () => (
-    <StyledSelect
-      onFocus={this.focus}
-      onBlur={this.blur}
-      tabIndex={0}>
-      <Content className={'btn btn-default btn-xs'}>
-        <Value>{this.props.value}</Value>
-        <Indicator>
-          {
-            this.state.focused
-              ? (<div className="ion-arrow-down-b" />)
-              : (<div className="ion-arrow-up-b" />)
-          }
-        </Indicator>
-      </Content>
-      {
-        this.state.focused &&
-        <Dropdown onSelect={this.props.onSelect}>
-          {this.props.children}
-        </Dropdown>
-      }
-    </StyledSelect>
-  );
+  render = () => {
+    const buttonStyles = classNames(styles.content, 'btn btn-default btn-xs');
+    return (
+      <div
+        className={styles.select}
+        onFocus={this.focus}
+        onBlur={this.blur}
+        tabIndex={0}>
+        <div className={buttonStyles}>
+          <div className={styles.value}>{this.props.value}</div>
+          <div className={styles.indicator}>
+            {
+              this.state.focused ?
+              (<div className="ion-arrow-down-b" />) :
+              (<div className="ion-arrow-up-b" />)
+            }
+          </div>
+        </div>
+        {this.state.focused &&
+          <Dropdown onSelect={this.props.onSelect}>
+            {this.props.children}
+          </Dropdown>
+        }
+      </div>
+    );
+  }
 }
 
-export default Select;
+export default withStyles(styles)(Select);

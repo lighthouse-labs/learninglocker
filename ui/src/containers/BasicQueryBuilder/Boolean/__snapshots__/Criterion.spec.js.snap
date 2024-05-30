@@ -1,36 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`BasicQueryBuilder -> Boolean Criterion should render 1`] = `
-.c1 {
-  min-height: 30px;
-  width: 100%;
-}
-
-.c0 {
-  margin-bottom: 4px;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-flex-direction: row;
-  -ms-flex-direction: row;
-  flex-direction: row;
-}
-
-.c2 {
-  width: 20%;
-  min-width: 50px;
-}
-
+exports[`Criterion should render 1`] = `
 <div
-  className="c0"
+  className="criterion"
 >
   <div
-    className="c1"
+    className="criterionValue noCriteria"
   >
     <div>
       <label
-        className="c2"
+        className="radioLabel"
         htmlFor="statement.result.success-1"
       >
         True:  
@@ -46,7 +25,7 @@ exports[`BasicQueryBuilder -> Boolean Criterion should render 1`] = `
     </div>
     <div>
       <label
-        className="c2"
+        className="radioLabel"
         htmlFor="statement.result.success-2"
       >
         False:  
@@ -64,37 +43,16 @@ exports[`BasicQueryBuilder -> Boolean Criterion should render 1`] = `
 </div>
 `;
 
-exports[`BasicQueryBuilder -> Boolean Criterion with value 1`] = `
-.c1 {
-  min-height: 30px;
-  width: 100%;
-}
-
-.c0 {
-  margin-bottom: 4px;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-flex-direction: row;
-  -ms-flex-direction: row;
-  flex-direction: row;
-}
-
-.c2 {
-  width: 20%;
-  min-width: 50px;
-}
-
+exports[`Criterion with value 1`] = `
 <div
-  className="c0"
+  className="criterion"
 >
   <div
-    className="c1"
+    className="criterionValue noCriteria"
   >
     <div>
       <label
-        className="c2"
+        className="radioLabel"
         htmlFor="statement.result.success-3"
       >
         True:  
@@ -110,7 +68,7 @@ exports[`BasicQueryBuilder -> Boolean Criterion with value 1`] = `
     </div>
     <div>
       <label
-        className="c2"
+        className="radioLabel"
         htmlFor="statement.result.success-4"
       >
         False:  

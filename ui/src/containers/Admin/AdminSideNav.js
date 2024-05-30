@@ -1,46 +1,39 @@
 import React from 'react';
 import Link from 'ui/containers/Link';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import SideNavFooter from 'ui/components/SideNavFooter';
-import {
-  SideNavContainer,
-  NavSideNav, SideNavHeader, activeLinkClassName, OrgAvatar
-} from 'ui/containers/SideNav/styled';
+import styles from 'ui/containers/SideNav/sidenav.css';
 import DEFAULT_LOGO from 'ui/static/logos/default/default.gif';
 
 
 const renderLink = (activeClass, routeName, text) => (
   <li>
-    <Link routeName={routeName} activeClassName={activeClass}>
-      {text}
-    </Link>
+    <Link routeName={routeName} activeClassName={activeClass}> {text}</Link>
   </li>
 );
 
-const AdminSideNav = () => {
-  const activeClass = `v-link-active ${activeLinkClassName}`;
-
+const component = () => {
+  const activeClass = `v-link-active ${styles.vLinkActive}`;
   return (
-    <SideNavContainer className={'col-sm-3 col-md-2'} >
-      <SideNavHeader>
-        <OrgAvatar>
+    <div className={`col-sm-3 col-md-2 ${styles.sidenav}`} >
+      <header className={styles.sidenavHeader}>
+        <div className={styles.orgAvatar} >
           <img alt="logo" src={DEFAULT_LOGO} />
-        </OrgAvatar>
-        <div className="media-body">
-          <div style={{ textAlign: 'center' }}>
-            Site Settings
-          </div>
         </div>
-      </SideNavHeader>
+        <div className="media-body">
+          <div className={styles.mediaAuthor}>Site Settings</div>
+        </div>
+      </header>
 
-      <NavSideNav className={'nav'}>
+      <ul className={`nav ${styles.navSidenav}`}>
         { renderLink(activeClass, 'admin.users', 'Users') }
         { renderLink(activeClass, 'admin.organisations', 'Organisations') }
-      </NavSideNav>
+      </ul>
       <footer>
         <SideNavFooter />
       </footer>
-    </SideNavContainer>
+    </div>
   );
 };
 
-export default AdminSideNav;
+export default withStyles(styles)(component);

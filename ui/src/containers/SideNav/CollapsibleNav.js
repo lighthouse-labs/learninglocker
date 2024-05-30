@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { routeNodeSelector } from 'redux-router5';
 import { VelocityComponent } from 'velocity-react';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { compose } from 'recompose';
 import { connect } from 'react-redux';
-import { includesSegment } from 'router5.helpers';
 import Link from 'ui/containers/Link';
-import { activeLinkClassName, SubNav } from 'ui/containers/SideNav/styled';
+import { includesSegment } from 'router5.helpers';
+import styles from './sidenav.css';
 
 class CollapsibleNav extends Component {
   static propTypes = {
@@ -73,7 +74,7 @@ class CollapsibleNav extends Component {
         <Link
           routeName={routeName}
           routeParams={routeParams}
-          activeClassName={`${activeLinkClassName}`}
+          activeClassName={`${styles.vLinkActive} ${styles.active}`}
           isActive={isExpanded}
           onClick={this.onClick}>
           <i className={icon} /> {label}
@@ -83,12 +84,12 @@ class CollapsibleNav extends Component {
           animation={animationProps}
           duration={350}
           complete={this.animationComplete(isExpanded)} >
-          <SubNav
-            className={'nav animated fadeIn'}
+          <ul
+            className={`nav animated fadeIn ${styles.subNav}`}
             ref={this.saveBodyRef}
             style={{ overflow: 'hidden' }}>
             {children}
-          </SubNav>
+          </ul>
         </VelocityComponent>
       </li>
     );
@@ -96,6 +97,7 @@ class CollapsibleNav extends Component {
 }
 
 export default compose(
+  withStyles(styles),
   connect((state, { routeName }) => ({
     activeRoute: routeNodeSelector(routeName)(state).route
   }))

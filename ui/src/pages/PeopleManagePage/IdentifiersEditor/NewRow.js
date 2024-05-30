@@ -1,13 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Map } from 'immutable';
+import classNames from 'classnames';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { compose, setPropTypes, withState } from 'recompose';
 import AddIconButton from 'ui/components/IconButton/AddIconButton';
 import CancelIconButton from 'ui/components/IconButton/CancelIconButton';
-import IfiEditor from '../IfiEditor';
 import TypeEditor from './TypeEditor';
+import IfiEditor from '../IfiEditor';
 import hasIdentifierValueErrors from './hasIdentifierValueErrors';
-import { TableData, ActionsTableData } from './TableData';
+import styles from './styles.css';
 
 const enhance = compose(
   setPropTypes({
@@ -15,7 +17,8 @@ const enhance = compose(
     onCancel: PropTypes.func.isRequired,
   }),
   withState('identifierType', 'setIdentifierType', 'mbox'),
-  withState('identifierValue', 'setIdentifierValue', '')
+  withState('identifierValue', 'setIdentifierValue', ''),
+  withStyles(styles),
 );
 
 const render = ({
@@ -58,10 +61,10 @@ const render = ({
   };
   return (
     <tr>
-      <TableData>
+      <td className={styles.td}>
         <TypeEditor value={identifierType} onChange={handleTypeChange} />
-      </TableData>
-      <TableData>
+      </td>
+      <td className={styles.td}>
         <IfiEditor
           identifierType={identifierType}
           value={identifierValue}
@@ -70,11 +73,11 @@ const render = ({
           refFirstInput={(input) => {
             firstInputRef = input;
           }} />
-      </TableData>
-      <ActionsTableData>
+      </td>
+      <td className={classNames(styles.td, styles.actions)}>
         <AddIconButton onClick={handleAddAndReset} disabled={hasErrors} />
         <CancelIconButton onClick={onCancel} />
-      </ActionsTableData>
+      </td>
     </tr>
   );
 };

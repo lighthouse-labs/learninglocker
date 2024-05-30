@@ -1,18 +1,13 @@
 import React from 'react';
-import styled from 'styled-components';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import styles from './sidenavfooter.css';
 
-const Footer = styled.div`
-  color: #999;
-
-  @media screen and (max-height: 765px) {
-    width: 150px;
-  }
-`;
-
-export default () => (
-  <Footer>
+const SideNavFooter = () => (
+  <div className={styles['sidenav-footer']}>
     <a href="https://ht2ltd.zendesk.com/hc/en-us/categories/115000129989-Learning-Locker">Help centre</a>
     <div>Powered by</div>
     <a href="http://learninglocker.net" target="_blank" rel="noopener noreferrer">Learning Locker Cloud</a>
-  </Footer>
+  </div>
 );
+
+export default withStyles(styles)(SideNavFooter);

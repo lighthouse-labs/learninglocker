@@ -10,7 +10,6 @@ function* createBlankDashboard({ userId, organisationId, dispatch }) {
     props: {
       owner: userId,
       title: 'Blank Dashboard',
-      type: 'blankDashboard',
       isExpanded: true,
     },
   }));

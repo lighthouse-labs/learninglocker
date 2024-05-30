@@ -1,14 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Map } from 'immutable';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { compose, withProps, setPropTypes } from 'recompose';
-import styled from 'styled-components';
 import { withModels } from 'ui/utils/hocs';
 import createPersonaIdentFilter from '../createPersonaIdentFilter';
 import SavedRow from './SavedRow';
-import { tableDataStyle } from './tableDataStyle';
-
-const TableHeader = styled.th`${tableDataStyle}`;
+import styles from './styles.css';
 
 const enhance = compose(
   setPropTypes({
@@ -20,7 +18,8 @@ const enhance = compose(
     first: 100,
     sort: new Map({ _id: -1 }),
   })),
-  withModels
+  withModels,
+  withStyles(styles)
 );
 
 const IdentifiersViewer = ({ models }) => {
@@ -33,11 +32,11 @@ const IdentifiersViewer = ({ models }) => {
   }
   return (
     <div>
-      <table style={{ width: '100%' }}>
+      <table className={styles.table}>
         <thead>
           <tr>
-            <TableHeader>Type</TableHeader>
-            <TableHeader>Value</TableHeader>
+            <th className={styles.td}>Type</th>
+            <th className={styles.td}>Value</th>
           </tr>
         </thead>
         <tbody>

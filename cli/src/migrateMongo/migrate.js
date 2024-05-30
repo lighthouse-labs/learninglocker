@@ -14,7 +14,7 @@ const downFn = async ({ key, down }) => {
   logger.info(`Finished down migration of ${key}`);
 };
 
-const migrateOne = async ({ migrationKey, migration, down: doDown, order }) => {
+const migrateOne = async ({ migrationKey, migration, down: doDown }) => {
   const { up, down } = migration;
 
   if (doDown) {
@@ -29,13 +29,11 @@ const migrateOne = async ({ migrationKey, migration, down: doDown, order }) => {
     logger.info(`Starting up migration of ${migrationKey}`);
     await up();
 
-    const out = await new Migration({
+    await new Migration({
       key: migrationKey,
-      upFn: up.toString(),
-      order
+      upFn: up.toString()
     }).save();
     logger.info(`Finished up migration of ${migrationKey}`);
-    return out;
   } catch (err) {
     logger.error(`Error migrating up ${migrationKey}, Reverting ${migrationKey}`);
     await downFn({
@@ -56,7 +54,6 @@ const migrate = async ({ migrations, down }) => {
       return migrateOne({
         migrationKey: key,
         migration: value,
-        order: (acc || { order: 0 }).order + 1,
         down
       });
     },

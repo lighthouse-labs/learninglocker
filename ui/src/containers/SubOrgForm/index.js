@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Map } from 'immutable';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { compose } from 'recompose';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
@@ -20,6 +21,7 @@ import uuid from 'uuid';
 import DatePicker from 'ui/components/Material/DatePicker';
 import { hasScopeSelector } from 'ui/redux/modules/auth';
 import { SITE_ADMIN } from 'lib/constants/scopes';
+import styles from './suborgform.css';
 
 const schema = 'organisation';
 
@@ -41,7 +43,8 @@ class SubOrgForm extends Component {
 
     this.state = {
       fileName: '',
-      fileHandle: null
+      fileHandle: null,
+      filePath: this.props.model.get('logoPath')
     };
   }
 
@@ -372,7 +375,8 @@ class SubOrgForm extends Component {
               <br />
               <a
                 onClick={this.handleSubmit}
-                className="btn btn-primary btn-inverse btn-sm">
+                className="btn btn-primary btn-inverse btn-sm"
+                style={{ display: this.state.showUpload }}>
                 {this.renderButtonContent()}
               </a>
             </div>
@@ -390,6 +394,7 @@ class SubOrgForm extends Component {
                 <div className="form-group">
                   <Checkbox
                     label="Require at least one letter"
+                    style={styles.checkbox}
                     onChange={this.onChangeBooleanSetting.bind(
                       null,
                       'PASSWORD_REQUIRE_ALPHA'
@@ -400,6 +405,7 @@ class SubOrgForm extends Component {
                 <div className="form-group">
                   <Checkbox
                     label="Require at least one number"
+                    style={styles.checkbox}
                     onChange={this.onChangeBooleanSetting.bind(
                       null,
                       'PASSWORD_REQUIRE_NUMBER'
@@ -411,6 +417,7 @@ class SubOrgForm extends Component {
             <div className="form-group">
               <Checkbox
                 label="Use custom password requirements"
+                style={styles.checkbox}
                 onChange={this.onChangeBooleanSetting.bind(
                   null,
                   'PASSWORD_USE_CUSTOM_REGEX'
@@ -433,6 +440,7 @@ class SubOrgForm extends Component {
             <div className="form-group">
               <Checkbox
                 label="Lock user accounts after wrong attempts"
+                style={styles.checkbox}
                 onChange={this.onChangeBooleanSetting.bind(
                   null,
                   'LOCKOUT_ENABLED'
@@ -448,6 +456,7 @@ class SubOrgForm extends Component {
             <div className="form-group">
               <Checkbox
                 label="Check password history"
+                style={styles.checkbox}
                 onChange={this.onChangeBooleanSetting.bind(
                   null,
                   'PASSWORD_HISTORY_CHECK'
@@ -460,7 +469,7 @@ class SubOrgForm extends Component {
           </fieldset>
 
           <div className="from-group">
-            <p style={{ padding: 8 }}>Expiry</p>
+            <p>Expiry</p>
             <DatePicker
               value={model.get('expiration') ? new Date(model.get('expiration')) : null}
               onChange={this.onExpirationChange}
@@ -490,6 +499,7 @@ class SubOrgForm extends Component {
 }
 
 export default compose(
+  withStyles(styles),
   connect(
     state =>
       ({

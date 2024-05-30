@@ -28,6 +28,10 @@ class Stores extends Component {
     searchString: PropTypes.string,
   };
 
+  state = {
+    criteria: ''
+  }
+
   onClickAdd = () => {
     this.addButton.blur();
     return this.props.addModel({

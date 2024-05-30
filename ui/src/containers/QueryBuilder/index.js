@@ -2,13 +2,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Map, List } from 'immutable';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import BasicQueryBuilder from 'ui/containers/BasicQueryBuilder';
 import SavedQueries from 'ui/containers/QueryBuilder/SavedQueries';
 import RawQueryBuilder from 'ui/components/RawQueryBuilder';
 import { withState, compose } from 'recompose';
 import { connect } from 'react-redux';
 import { clearModelsCache } from 'ui/redux/actions';
-import { ButtonBox, QueryForm } from 'ui/containers/QueryBuilder/styled';
+import styles from './querybuilder.css';
 
 const BLANK_QUERY = new Map();
 
@@ -68,7 +69,7 @@ class QueryBuilder extends Component {
   }
 
   renderButtons = ({ isRawMode }) => (
-    <ButtonBox>
+    <div className={styles.buttonBox}>
       <button
         className="btn btn-default btn-xs"
         onClick={this.refreshStatements}
@@ -87,21 +88,22 @@ class QueryBuilder extends Component {
         title="Toggle edit mode">
         <i className={`icon ${isRawMode ? 'ion-code-working' : 'ion-code'}`} />
       </button>
-    </ButtonBox>
+    </div>
   )
 
   render = () => (
     <div>
       {this.renderButtons(this.props)}
-      <QueryForm>
+      <div className={styles.queryForm} >
         <SavedQueries query={this.props.query} onQueryChange={this.onQueryChange} />
         {this.renderBuilder()}
-      </QueryForm>
+      </div>
     </div>
   );
 }
 
 export default compose(
+  withStyles(styles),
   withState('isRawMode', 'setIsRawMode', false),
   connect(() => ({}), { clearModelsCache })
 )(QueryBuilder);

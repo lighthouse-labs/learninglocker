@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { compose, setPropTypes, defaultProps, shouldUpdate } from 'recompose';
 import { Map, List } from 'immutable';
 import { changeCriteria, deleteCriterion, addCriterionFromSection, getCriteria } from 'ui/utils/queries';
-import QueryBuilderSections from 'ui/containers/BasicQueryBuilder/QueryBuilderSections';
+import QueryBuilderSections from './QueryBuilderSections';
 
 const enhance = compose(
   setPropTypes({
@@ -26,7 +26,6 @@ const enhance = compose(
 
 const BasicQueryBuilder = ({ componentPath, timezone, orgTimezone, defaults, query, onQueryChange }) => {
   const criteria = getCriteria(query);
-
   return (
     <QueryBuilderSections
       timezone={timezone}

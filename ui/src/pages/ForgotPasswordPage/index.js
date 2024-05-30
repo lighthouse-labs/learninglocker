@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { compose } from 'recompose';
 import { connect } from 'react-redux';
 import { Card } from 'react-toolbox/lib/card';
@@ -12,6 +13,7 @@ import {
   requestResetRequestStateSelector
 } from 'ui/redux/modules/auth';
 import FullPageBackground from 'ui/components/FullPageBackground';
+import styles from './forgotpassword.css';
 
 class ForgotPassword extends Component {
   static propTypes = {
@@ -23,7 +25,7 @@ class ForgotPassword extends Component {
   onSubmit = (e) => {
     if (e) e.preventDefault();
     const email = this.email.value;
-    if (email) this.props.requestPasswordResetStart(email).catch(() => { });
+    if (email) this.props.requestPasswordResetStart(email).catch(() => {});
   }
 
   renderForm() {
@@ -50,7 +52,7 @@ class ForgotPassword extends Component {
               )}
             </div>
           </Card>
-          <div style={{ textAlign: 'center', marginTop: 10 }}>
+          <div className={styles.buttonGroup}>
             <button type="submit" className="btn btn-primary">Send reset instructions</button>
           </div>
         </form>
@@ -82,7 +84,7 @@ class ForgotPassword extends Component {
         <Helmet title="- Forgotten Password" />
         <FullPageBackground>
           <h3 style={{ marginBottom: '50px' }}>Forgotten password</h3>
-          {stateView}
+          { stateView }
         </FullPageBackground>
       </div>
     );
@@ -90,6 +92,7 @@ class ForgotPassword extends Component {
 }
 
 export default compose(
+  withStyles(styles),
   connect(
     state => ({
       requestResetError: requestResetErrorSelector(state),

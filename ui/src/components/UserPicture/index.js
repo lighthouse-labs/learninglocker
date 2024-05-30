@@ -2,23 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Map } from 'immutable';
 import Avatar from 'react-toolbox/lib/avatar';
-import styled from 'styled-components';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import { omitBy, isFunction } from 'lodash';
+import styles from './styles.css';
 
-const letterClassName = 'letter';
-
-const StyledAvatar = styled(Avatar)`
-  && {
-    width: 30px;
-    height: 30px;
-    font-size: 2.1rem;
-    margin-top: -5px;
-    margin-right: 20px;
-
-    .${letterClassName} {
-      line-height: 30px;
-    }
-  }
-`;
+const enhance = withStyles(styles);
 
 class UserPicture extends Component {
   static propTypes = {
@@ -33,25 +21,18 @@ class UserPicture extends Component {
   render = () => {
     const { model, className, ...others } = this.props;
     let name = model.get('name');
-
     if (!name || name === '') name = model.get('email', '');
-
     const modelProps = {
       className,
       title: name,
-      theme: {
-        letter: letterClassName,
-      },
-      size: 30,
       ...others,
+      theme: omitBy(styles, isFunction),
+      size: 30,
     };
 
-    if (model.has('imageUrl')) {
-      return <StyledAvatar src={model.get('imageUrl')} {...modelProps} />;
-    }
-
-    return <StyledAvatar {...modelProps} />;
-  };
+    if (model.has('imageUrl')) return <Avatar src={model.get('imageUrl')} {...modelProps} />;
+    return <Avatar {...modelProps} />;
+  }
 }
 
-export default UserPicture;
+export default enhance(UserPicture);

@@ -1,27 +1,15 @@
 import React from 'react';
 import Checkbox from 'react-toolbox/lib/checkbox';
-import styled from 'styled-components';
+import { omitBy, isFunction } from 'lodash';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import styles from './styles.css';
 
-const checkClassName = 'check';
-const checkedClassName = 'checked';
-const rippleClassName = 'ripple';
+export default withStyles(styles)((props) => {
+  const theme = omitBy(styles, isFunction);
 
-const LLCheckbox = styled(Checkbox)`
-  && {
-    .${checkClassName}.${checkedClassName},
-    .${rippleClassName} {
-      background-color: rgb(245,171,53);
-      border-color: rgb(245,171,53);
-    }
-  }
-`;
-
-export default props => (
-  <LLCheckbox
-    theme={{
-      check: checkClassName,
-      checked: checkedClassName,
-      ripple: rippleClassName,
-    }}
-    {...props} />
-);
+  return (
+    <Checkbox
+      theme={theme}
+      {...props} />
+  );
+});

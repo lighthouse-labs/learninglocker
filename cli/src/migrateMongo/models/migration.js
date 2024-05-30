@@ -4,8 +4,7 @@ import { getConnection } from 'lib/connections/mongoose';
 
 const schema = new mongoose.Schema({
   key: String,
-  upFn: String,
-  order: Number
+  upFn: String
 });
 
 schema.plugin(timestamps);

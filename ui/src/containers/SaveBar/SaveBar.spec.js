@@ -1,10 +1,13 @@
 import React from 'react';
-import renderer from 'react-test-renderer';
+import ReactTestRenderer from 'react-test-renderer';
+import { withInsertCSS } from 'ui/utils/hocs';
 import { fromJS, List } from 'immutable';
-import { COMPLETED, FAILED, IN_PROGRESS } from 'ui/utils/constants';
+import { IN_PROGRESS, COMPLETED, FAILED } from 'ui/utils/constants';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import SaveBar, { savingSelector } from './index.js';
+
+const SaveBarWrapper = withInsertCSS(SaveBar);
 
 const createMockStore = ({
   requestState = IN_PROGRESS
@@ -25,30 +28,31 @@ const createMockStore = ({
     userOrganisationSettings: {},
   };
 
-  return createStore((data, action) => {
-    switch (action.type) {
-      case '@@redux/INIT':
-        return data;
-      case 'addModel':
-        data.models = data.models.setIn(['modelType', action.modelId], fromJS(action.model));
-        return data;
-      default:
-        return;
-    }
-  }, mockState);
+  const mockStore =
+    createStore((data, action) => {
+      switch (action.type) {
+        case '@@redux/INIT':
+          return data;
+        case 'addModel':
+          data.models = data.models.setIn(['modelType', action.modelId], fromJS(action.model));
+          return data;
+        default:
+          return;
+      }
+    }, mockState);
+
+  return mockStore;
 };
 
 describe('SaveBar', () => {
   it('should render save bar IN_PROGRESS', () => {
     const mockStore = createMockStore({ requestState: IN_PROGRESS });
 
-    const sideNav = renderer
-      .create(
-        <Provider store={mockStore}>
-          <SaveBar />
-        </Provider>
-      )
-      .toJSON();
+    const sideNav = ReactTestRenderer.create(
+      <Provider store={mockStore}>
+        <SaveBarWrapper />
+      </Provider>
+    ).toJSON();
 
     expect(sideNav).toMatchSnapshot();
   });
@@ -56,13 +60,11 @@ describe('SaveBar', () => {
   it('should render save bar COMPLETED', () => {
     const mockStore = createMockStore({ requestState: COMPLETED });
 
-    const sideNav = renderer
-      .create(
-        <Provider store={mockStore}>
-          <SaveBar />
-        </Provider>
-      )
-      .toJSON();
+    const sideNav = ReactTestRenderer.create(
+      <Provider store={mockStore}>
+        <SaveBarWrapper />
+      </Provider>
+      ).toJSON();
 
     expect(sideNav).toMatchSnapshot();
   });
@@ -70,13 +72,11 @@ describe('SaveBar', () => {
   it('should render save bar FAILED', () => {
     const mockStore = createMockStore({ requestState: FAILED });
 
-    const sideNav = renderer
-      .create(
-        <Provider store={mockStore}>
-          <SaveBar />
-        </Provider>
-      )
-      .toJSON();
+    const sideNav = ReactTestRenderer.create(
+      <Provider store={mockStore}>
+        <SaveBarWrapper />
+      </Provider>
+    ).toJSON();
 
     expect(sideNav).toMatchSnapshot();
   });

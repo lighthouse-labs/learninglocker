@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Map } from 'immutable';
-import {
-  CriterionButton,
-  CriterionValue,
-  CriterionWrapper,
-  RadioLabel
-} from 'ui/containers/BasicQueryBuilder/styled';
+import classNames from 'classnames';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { uniqueId } from 'lodash';
+import styles from '../styles.css';
 
 export class Criterion extends Component {
   static propTypes = {
@@ -17,10 +14,13 @@ export class Criterion extends Component {
     onDeleteCriterion: PropTypes.func,
   }
 
-  shouldComponentUpdate = ({ section, criterion }) => !(
-    this.props.section.equals(section) &&
-    this.props.criterion.equals(criterion)
-  );
+  shouldComponentUpdate = ({ section, criterion }) => {
+    const shouldUpdate = !(
+      this.props.section.equals(section) &&
+      this.props.criterion.equals(criterion)
+    );
+    return shouldUpdate;
+  };
 
   canDeleteCriterion = () =>
     this.props.onDeleteCriterion !== undefined;
@@ -40,7 +40,9 @@ export class Criterion extends Component {
       return '';
     }
 
-    return this.getSubQuery();
+    const subQuery = this.getSubQuery();
+
+    return subQuery;
   }
 
   changeCriterion = value => this.props.onCriterionChange(new Map({
@@ -72,17 +74,31 @@ export class Criterion extends Component {
 
   render = () => {
     const canDeleteCriterion = this.canDeleteCriterion();
+    const criterionClasses = classNames(styles.criterionValue, {
+      [styles.noCriteria]: !canDeleteCriterion
+    });
+    const deleteBtnClasses = classNames(
+      styles.criterionButton,
+      'btn btn-default btn-xs'
+    );
+    const radioLabelClasses = classNames(
+      styles.radioLabel
+    );
+
     const inputName = this.getKey();
+
     const trueId = uniqueId(`${inputName}-`);
     const falseId = uniqueId(`${inputName}-`);
 
     return (
-      <CriterionWrapper>
-        <CriterionValue isFullWidth={!canDeleteCriterion}>
+      <div className={styles.criterion}>
+        <div className={criterionClasses}>
           <div>
-            <RadioLabel htmlFor={trueId}>
-              True:&nbsp;&nbsp;
-            </RadioLabel>
+            <label
+              className={radioLabelClasses}
+              htmlFor={trueId} >
+                True:&nbsp;&nbsp;
+            </label>
             <input
               id={trueId}
               type="radio"
@@ -92,9 +108,11 @@ export class Criterion extends Component {
               onChange={this.handleValueChange} />
           </div>
           <div>
-            <RadioLabel htmlFor={falseId}>
-              False:&nbsp;&nbsp;
-            </RadioLabel>
+            <label
+              className={radioLabelClasses}
+              htmlFor={falseId} >
+                False:&nbsp;&nbsp;
+            </label>
             <input
               id={falseId}
               type="radio"
@@ -103,17 +121,17 @@ export class Criterion extends Component {
               checked={this.getValue() === false}
               onChange={this.handleValueChange} />
           </div>
-        </CriterionValue>
+        </div>
         {(canDeleteCriterion &&
-          <CriterionButton
-            className={'btn btn-default btn-xs'}
-            onClick={this.props.onDeleteCriterion} >
+          <button
+            onClick={this.props.onDeleteCriterion}
+            className={deleteBtnClasses}>
             <i className="ion-minus-round" />
-          </CriterionButton>
+          </button>
         )}
-      </CriterionWrapper>
+      </div>
     );
   }
 }
 
-export default Criterion;
+export default withStyles(styles)(Criterion);

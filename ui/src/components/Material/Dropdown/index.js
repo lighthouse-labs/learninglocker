@@ -1,23 +1,11 @@
 import React from 'react';
 import Dropdown from 'react-toolbox/lib/dropdown';
-import styled from 'styled-components';
+import { omitBy, isFunction } from 'lodash';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import styles from './styles.css';
 
-const valuesClassName = 'values';
-const selectedClassName = 'selected';
-
-const StyledDropdown = styled(Dropdown)`
-  .${valuesClassName} {
-    .${selectedClassName} {
-      color: rgb(245,171,53);
-    }
-  }
-`;
-
-export default props => (
-  <StyledDropdown
-    theme={{
-      values: valuesClassName,
-      selected: selectedClassName,
-    }}
+export default withStyles(styles)(props =>
+  <Dropdown
+    theme={omitBy(styles, isFunction)}
     {...props} />
 );

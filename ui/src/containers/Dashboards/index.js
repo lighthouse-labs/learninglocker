@@ -1,30 +1,52 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { isLoadingSelector } from 'ui/redux/modules/pagination';
+import Tabs from 'ui/components/Material/Tabs';
+import { Tab } from 'react-toolbox/lib/tabs';
 import { connect } from 'react-redux';
-import { Map, fromJS } from 'immutable';
-import { routeNodeSelector } from 'redux-router5';
-import { withProps, compose } from 'recompose';
-import { withModels, withModel } from 'ui/utils/hocs';
-import { loggedInUserId } from 'ui/redux/modules/auth';
-import DashboardList from 'ui/containers/DashboardList';
-import DashboardTemplates from 'ui/containers/DashboardTemplates';
-
-const schema = 'dashboards';
-
-const DashboardLists = compose(
-  withProps({
-    schema,
-    sort: fromJS({ createdAt: -1, _id: -1 }),
-  }),
+import { Map } from 'immutable';
+import { routeNodeSelector, actions } from 'redux-router5';
+import { withProps, compose, withHandlers } from 'recompose';
+import {
   withModels,
-  withModel,
-)(DashboardList);
+  withModel
+} from 'ui/utils/hocs';
+import { loggedInUserId } from 'ui/redux/modules/auth';
+import Spinner from 'ui/components/Spinner';
+import Dashboard from 'ui/containers/Dashboard';
+import DashboardTemplates from 'ui/containers/DashboardTemplates';
+import { activeOrgIdSelector } from 'ui/redux/modules/router';
+
+const ADD_ROUTE = 'add';
+
+const StyledSpinner = () => (
+  <div style={{ height: '60vh', display: 'flex' }}>
+    <Spinner />
+  </div>
+);
+
+const NoDashboards = () => (
+  <div>
+    <h3>{"You don't have any dashboards yet! Add one to get started."}</h3>
+    <DashboardTemplates />
+  </div>
+);
+
+const renderDashboard = params => (model, index) => (
+  <Tab key={index} label={model.get('title', `Dashboard ${index + 1}`, '')}>
+    <Dashboard id={model.get('_id')} params={params} />
+  </Tab>
+);
+
 
 const enhance = compose(
   connect(
     state => ({
+      isLoading: isLoadingSelector('dashboard', new Map())(state),
       userId: loggedInUserId(state),
       route: routeNodeSelector('organisation.dashboards')(state).route,
-    })
+      organisation: activeOrgIdSelector(state)
+    }),
+    { navigateTo: actions.navigateTo }
   ),
   withProps({
     schema: 'dashboard',
@@ -54,42 +76,54 @@ const enhance = compose(
         modelsWithModel: !id || models.has(id) ? models : models.reverse().set(id, model).reverse()
       });
     }
-  )
+  ),
+  withHandlers({
+    handleTabChange: ({
+      models,
+      modelsWithModel,
+      navigateTo,
+      route,
+    }) => (tabIndex) => {
+      const organisationId = route.params.organisationId;
+      if (tabIndex === models.size) {
+        navigateTo('organisation.data.dashboards.add', { organisationId });
+        return;
+      }
+      const selectedDashboard = modelsWithModel.toList().get(tabIndex);
+      navigateTo('organisation.data.dashboards.id', {
+        organisationId,
+        dashboardId: selectedDashboard.get('_id'),
+      });
+    }
+  }),
 );
 
-const Dashboards = () => {
-  const [addDashbord, setAddDashbord] = useState(false);
+const Dashboards = ({
+  handleTabChange,
+  isLoading,
+  modelsWithModel,
+  models,
+  route,
+}) => {
+  if (isLoading) {
+    return <StyledSpinner />;
+  }
 
-  const openDashboard = () => setAddDashbord(true);
-  const closeDashboard = () => setAddDashbord(false);
+  if (modelsWithModel.size === 0) {
+    return <NoDashboards />;
+  }
+
+  const activeTab = (route.name === 'organisation.data.dashboards.add') ?
+    models.size :
+    modelsWithModel.toList().keyOf(modelsWithModel.get(route.params.dashboardId));
 
   return (
-    <div>
-      <header id="topbar">
-        <div className="heading heading-light">
-          <span className="pull-right open_panel_btn" >
-            <button
-              className="btn btn-primary btn-sm"
-              ref={() => {}}
-              onClick={openDashboard}>
-              <i className="ion ion-plus" /> Add Dashboard
-            </button>
-          </span>
-          Dashboards
-        </div>
-      </header>
-      <div className="row">
-        {addDashbord && (
-          <div className="col-md-12">
-            <DashboardTemplates handleClose={closeDashboard} />
-          </div>
-        )}
-
-        <div className="col-md-12">
-          <DashboardLists />
-        </div>
-      </div>
-    </div>
+    <Tabs index={activeTab} onChange={handleTabChange}>
+      {modelsWithModel.map(renderDashboard(route.params)).valueSeq()}
+      <Tab label={ADD_ROUTE} >
+        <DashboardTemplates />
+      </Tab>
+    </Tabs>
   );
 };
 

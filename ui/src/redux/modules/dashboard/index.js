@@ -1,6 +1,6 @@
 import * as blankDashboard from './blankDashboard';
 import * as copyDashboard from './copyDashboard';
-import * as streamStarter from './streamStarter';
+import * as curatrStarter from './curatrStarter';
 import * as gettingStarted from './gettingStarted';
 
 /*
@@ -10,6 +10,6 @@ import * as gettingStarted from './gettingStarted';
 export const sagas = [
   ...blankDashboard.sagas,
   ...copyDashboard.sagas,
-  ...streamStarter.sagas,
+  ...curatrStarter.sagas,
   ...gettingStarted.sagas,
 ];
