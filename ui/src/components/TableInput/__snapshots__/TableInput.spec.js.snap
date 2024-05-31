@@ -1,28 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`TableInput Should render table input 1`] = `
-.c0 {
-  margin-top: 0;
-}
-
-.c0 > thead > tr > th {
-  padding-top: 10px;
-  padding-bottom: 9px;
-}
-
-.c0 > tbody > tr > td {
-  padding: 2px 0;
-  vertical-align: middle;
-}
-
-.c0 > tbody > tr > td input {
-  border: none;
-  box-shadow: none;
-}
-
 <span>
   <table
-    className="c0 table table-borderless"
+    className="table table-borderless table"
   >
     <thead>
       <tr>
@@ -60,11 +41,7 @@ exports[`TableInput Should render table input 1`] = `
           />
         </td>
         <td
-          style={
-            Object {
-              "textAlign": "right",
-            }
-          }
+          className="textRight"
         >
           <a
             className="pull-right"

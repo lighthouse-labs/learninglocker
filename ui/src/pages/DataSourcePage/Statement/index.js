@@ -1,16 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Map, List } from 'immutable';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import moment from 'moment';
-import styled from 'styled-components';
-import { ActivityPart } from './ActivityPart';
-import { ActorPart } from './ActorPart';
+import { displayActor, displayVerb, displayActivity } from '../../../utils/xapi';
 import AutoUpdate from './AutoUpdate';
-import { VerbPart } from './VerbPart';
-
-const Timestamp = styled.span`
-  font-weight: normal;
-`;
+import styles from './styles.css';
 
 class Statement extends Component {
   static propTypes = {
@@ -24,27 +19,34 @@ class Statement extends Component {
   hasInStatement = path =>
     this.props.statement.hasIn(path);
 
-  renderActor = (path, filterPath) => {
+  renderPart = (path, part, displayer, filterPath) => {
     const filterValue = this.getInStatement(filterPath);
     const value = this.getInStatement(path);
+    const display = displayer(value);
+    const title = JSON.stringify(value.toJS(), null, 2);
+
     return (
-      <ActorPart value={value} onSetFilter={() => this.props.setFilterAt(filterPath, filterValue)} />
+      <a
+        className={styles[part]}
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          this.props.setFilterAt(filterPath, filterValue);
+        }}
+        title={title}>
+        {display}
+      </a>
     );
   }
 
-  renderVerb = (path) => {
-    const value = this.getInStatement(path);
-    return (
-      <VerbPart value={value} onSetFilter={() => this.props.setFilterAt(path, value)} />
-    );
-  }
+  renderActor = (path, filterPath) =>
+    this.renderPart(path, 'actor', displayActor, filterPath);
 
-  renderActivity = (path) => {
-    const value = this.getInStatement(path);
-    return (
-      <ActivityPart value={value} onSetFilter={() => this.props.setFilterAt(path, value)} />
-    );
-  }
+  renderVerb = path =>
+    this.renderPart(path, 'verb', displayVerb, path);
+
+  renderActivity = path =>
+    this.renderPart(path, 'object', displayActivity, path);
 
   renderSubStatement = basePath =>
     <span>({this.renderStatement(basePath)})</span>;
@@ -90,13 +92,13 @@ class Statement extends Component {
         {this.renderStatement(new List(['statement']))}
 
         <AutoUpdate>
-          <Timestamp className="pull-right">
+          <span className={`pull-right ${styles.timestamp}`}>
             {timestamp.fromNow()}
-          </Timestamp>
+          </span>
         </AutoUpdate>
       </span>
     );
   };
 }
 
-export default Statement;
+export default withStyles(styles)(Statement);

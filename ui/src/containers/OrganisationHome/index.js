@@ -13,12 +13,6 @@ const renderPage = (routeName) => {
   const testRoute = startsWithSegment(routeName);
 
   // Data //
-  if (testRoute('organisation.data.dashboards.id')) {
-    return React.createElement(createAsyncComponent({
-      loader: System.import('ui/containers/Dashboard')
-    }));
-  }
-
   if (testRoute('organisation.data.dashboards')) {
     return React.createElement(createAsyncComponent({
       loader: System.import('ui/containers/Dashboards')
@@ -90,18 +84,6 @@ const renderPage = (routeName) => {
   }
 
   if (testRoute('organisation.settings.apps')) {
-    return React.createElement(createAsyncComponent({
-      loader: System.import('ui/pages/SettingsAppsPage')
-    }));
-  }
-
-  if (testRoute('organisation.apps.salesDemo')) {
-    return React.createElement(createAsyncComponent({
-      loader: System.import('ui/pages/SettingsAppsPage/subpages/SalesDemoAppPage'),
-    }));
-  }
-
-  if (testRoute('organisation.apps')) {
     return React.createElement(createAsyncComponent({
       loader: System.import('ui/pages/SettingsAppsPage')
     }));

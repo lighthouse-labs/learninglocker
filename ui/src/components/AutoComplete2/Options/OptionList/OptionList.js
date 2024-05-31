@@ -1,20 +1,9 @@
 import React from 'react';
 import { List } from 'immutable';
-import styled from 'styled-components';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import InfiniteOptionList from './InfiniteOptionList';
-
-const Divider = styled.div`
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid #eee;
-`;
-
-const StyledOptionList = styled.div`
-  border: 1px solid #ccc;
-  border-top: none;
-  border-radius: 0px 0px 2px 2px;
-  background-color: #fff;
-`;
+import Divider from './Divider';
+import styles from './styles.css';
 
 /**
  * Renders options as an infinite scrollable list and children as static items underneath
@@ -30,7 +19,7 @@ const OptionList = ({
   deselectOption,
   children
 }) => (
-  <StyledOptionList>
+  <div className={styles.optionList}>
     <InfiniteOptionList
       options={options}
       optionCount={optionCount}
@@ -40,9 +29,9 @@ const OptionList = ({
       renderOption={renderOption}
       onSelectOption={onSelectOption}
       deselectOption={deselectOption} />
-    {children && <Divider />}
-    {children}
-  </StyledOptionList>
+    { children && <Divider /> }
+    { children }
+  </div>
 );
 
-export default OptionList;
+export default withStyles(styles)(OptionList);

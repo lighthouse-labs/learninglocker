@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import { Map } from 'immutable';
 import { connect } from 'react-redux';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { compose } from 'recompose';
 import {
   COUNTER,
   PIE,
-  TEMPLATE_LAST_7_DAYS_STATEMENTS,
-  TEMPLATE_STREAM_COMMENT_COUNT
 } from 'lib/constants/visualise';
 import { fetchModels } from 'ui/redux/modules/pagination';
 import { updateModel, modelsSchemaIdSelector } from 'ui/redux/modules/models';
@@ -19,16 +19,7 @@ import WidgetVisualisePicker from 'ui/containers/WidgetVisualisePicker';
 import VisualisationViewer from 'ui/containers/Visualisations/VisualisationViewer';
 import DeleteConfirm from 'ui/containers/DeleteConfirm';
 import { createDefaultTitle } from 'ui/utils/defaultTitles';
-import {
-  CloseButton,
-  MenuButton,
-  Widget as StyledWidget,
-  WidgetBody,
-  WidgetDropdownIcon,
-  WidgetContent,
-  WidgetHeading,
-  WidgetTitle
-} from './styled';
+import styles from './widget.css';
 
 const schema = 'widget';
 const VISUALISATION = 'stages/VISUALISATION';
@@ -58,7 +49,8 @@ class Widget extends Component {
     super(props);
     this.state = {
       isDeleteOpen: null,
-      openModalStep: null
+      openModalStep: null,
+      editingTitle: false
     };
   }
 
@@ -134,7 +126,18 @@ class Widget extends Component {
       </span>
     );
 
-  isCounter = type => type === COUNTER || type === TEMPLATE_LAST_7_DAYS_STATEMENTS || type === TEMPLATE_STREAM_COMMENT_COUNT
+  toggleEditingTitle = () => {
+  }
+
+  renderTitle = () => {
+    const { model } = this.props;
+    const isEditingTitle = true;
+    return isEditingTitle ? (
+      <span>{model.get('title')}</span>
+    ) : (
+      null
+    );
+  }
 
   renderMenu = () => {
     const { model, organisationId, visualisation } = this.props;
@@ -142,7 +145,7 @@ class Widget extends Component {
     const shouldShowTableModeToggle = (
       visualisation.size > 0 &&
       visualisation.get('type') &&
-      !this.isCounter(visualisation.get('type')) &&
+      visualisation.get('type') !== COUNTER &&
       model.has('visualisation')
     );
 
@@ -161,31 +164,33 @@ class Widget extends Component {
     return (
       <DropDownMenu
         button={
-          <MenuButton>
+          <a className={styles.menuButton}>
             <i className="ion ion-navicon-round" />
-          </MenuButton>
+          </a>
         }>
-        {shouldShowTableModeToggle &&
-          <CloseButton
+        { shouldShowTableModeToggle &&
+          <a
             onClick={this.toggleSourceView}
-            title="Table mode" >
-            <WidgetDropdownIcon className={'ion ion-edit grey'} />{this.getSourceView()}
-          </CloseButton>
+            title="Table mode"
+            className={styles.closeButton}>
+            <i className={`ion ${styles.marginRight} ion-edit grey`} />{this.getSourceView()}
+          </a>
         }
 
-        {shouldShowDonutModeToggle &&
-          <CloseButton
+        { shouldShowDonutModeToggle &&
+          <a
             onClick={this.toggleDonutView}
-            title="Donut mode" >
-            <WidgetDropdownIcon className={'ion ion-edit grey'} />{this.getDonutView()}
-          </CloseButton>
+            title="Donut mode"
+            className={styles.closeButton}>
+            <i className={`ion ${styles.marginRight} ion-edit grey`} />{this.getDonutView()}
+          </a>
         }
 
-        {shouldShowGoVisualisation &&
+        { shouldShowGoVisualisation &&
           <Link
             routeName={'organisation.data.visualise.visualisation'}
             routeParams={{ organisationId, visualisationId: visualisation.get('_id') }} >
-            <WidgetDropdownIcon className={'ion ion-edit grey'} />
+            <i className={`ion ${styles.marginRight} ion-edit grey`} />
             Go to visualisation
           </Link>
         }
@@ -193,15 +198,15 @@ class Widget extends Component {
         <a
           onClick={this.openModal.bind(null, VISUALISATION)}
           title="Edit widget visualisation or title">
-          <WidgetDropdownIcon className={'ion ion-gear-b grey'} />
+          <i className={`ion ${styles.marginRight} ion-gear-b grey`} />
           Edit Widget
         </a>
 
-        {this.props.editable &&
+        { this.props.editable &&
           <a
             onClick={this.openDeleteModal}
             title="Delete Widget">
-            <WidgetDropdownIcon className={'ion ion-close-round grey'} />
+            <i className={`ion ${styles.marginRight}  ion-close-round grey`} />
             Delete
           </a>
         }
@@ -220,44 +225,48 @@ class Widget extends Component {
     const { openModalStep, isDeleteOpen } = this.state;
     const isModalOpen = openModalStep === VISUALISATION || suggestedStep === VISUALISATION;
 
+    const titleStyles = classNames({
+      [styles.title]: true,
+      [styles.draggableTitle]: this.props.editable,
+    });
     return (
-      <StyledWidget className={'panel panel-default animated fadeIn'}>
-        <WidgetContent>
-          <WidgetHeading className={'panel-heading'}>
-            <WidgetTitle className={'panel-title react-drag-handle'}>
-              {this.props.editable && this.renderMenu()}
+      <div className={`panel panel-default animated fadeIn ${styles.widget}`} >
+        <div className={styles.widgetContent}>
+          <div
+            className={`panel-heading ${styles.heading}`}
+            onDoubleClick={this.toggleEditingTitle}>
+            <div className={`panel-title ${titleStyles} react-drag-handle`}>
+              { this.props.editable && this.renderMenu(styles) }
               <span style={{ cursor: 'initial' }}>{this.getTitle(model, this.props)}</span>
-            </WidgetTitle>
-          </WidgetHeading>
+            </div>
+          </div>
           {
-            <WidgetBody className={'panel-body'}>
+            <div className={`panel-body ${styles.body}`}>
               {model.has('visualisation') && (
                 <VisualisationViewer id={model.get('visualisation')} />
               )}
-            </WidgetBody>
+            </div>
           }
           {
             (isModalOpen) &&
-            <WidgetVisualisePicker
-              isOpened={isModalOpen || this.props.widgetModalOpen}
-              model={model}
-              onClickClose={this.closeModal}
-              onChangeTitle={this.props.onChangeTitle}
-              onChangeVisualisation={this.props.onChangeVisualisation} />
+              <WidgetVisualisePicker
+                isOpened={isModalOpen || this.props.widgetModalOpen}
+                model={model}
+                onClickClose={this.closeModal}
+                onChangeTitle={this.props.onChangeTitle}
+                onChangeVisualisation={this.props.onChangeVisualisation} />
           }
-          <DeleteConfirm key={model.get('_id')} isOpened={isDeleteOpen} {...delPopupProps} />
-        </WidgetContent>
-      </StyledWidget>
+          <DeleteConfirm isOpened={isDeleteOpen} {...delPopupProps} />
+        </div>
+      </div>
     );
   }
 }
 
 export default compose(
-  connect(
-    (state, { model }) => ({
-      visualisation: modelsSchemaIdSelector('visualisation', model.get('visualisation'))(state),
-      organisationId: activeOrgIdSelector(state),
-    }),
-    { updateModel, setModelQuery, fetchModels }
-  ),
+  withStyles(styles),
+  connect((state, { model }) => ({
+    visualisation: modelsSchemaIdSelector('visualisation', model.get('visualisation'))(state),
+    organisationId: activeOrgIdSelector(state),
+  }), { updateModel, setModelQuery, fetchModels }),
 )(Widget);

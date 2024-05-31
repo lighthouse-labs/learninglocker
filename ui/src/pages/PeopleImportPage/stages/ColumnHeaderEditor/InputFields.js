@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { compose, withHandlers } from 'recompose';
 import { Map } from 'immutable';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { COLUMN_ACCOUNT_KEY, COLUMN_ACCOUNT_VALUE, COLUMN_ATTRIBUTE_DATA } from 'lib/constants/personasImport';
 import * as personasImportHelpers from 'lib/services/importPersonas/personasImportHelpers';
 import { updateModel } from 'ui/redux/modules/models';
@@ -10,7 +11,7 @@ import PrimaryForm from './PrimaryForm';
 import AccountNameForm from './AccountNameForm';
 import AccountHomePageForm from './AccountHomePageForm';
 import AttributeNameForm from './AttributeNameForm';
-import { TableData } from './TableData';
+import styles from './styles.css';
 
 const handlers = {
   onColumnTypeChange: ({
@@ -144,8 +145,8 @@ const handlers = {
     const columnName = columnStructure.get('columnName', '');
 
     const newStructure = model
-      .get('structure')
-      .setIn([columnName, 'attributeName'], attributeName);
+    .get('structure')
+    .setIn([columnName, 'attributeName'], attributeName);
 
     doUpdateModel({
       schema: 'personasImport',
@@ -170,7 +171,7 @@ const InputFields = ({
   const isColumnOrderable = personasImportHelpers.isColumnOrderable({ columnStructure: columnStructure.toJS() });
 
   return (
-    <TableData style={{ display: 'flex', flexWrap: 'wrap', overflowX: 'auto' }}>
+    <td className={`${styles.td} ${styles.inputFields}`}>
       <FieldTypeForm
         columnType={columnStructure.get('columnType', '')}
         onChange={onColumnTypeChange}
@@ -207,11 +208,12 @@ const InputFields = ({
           disabled={disabled}
           onChange={onAttributeNameChange} />
       )}
-    </TableData>
+    </td>
   );
 };
 
 export default compose(
+  withStyles(styles),
   connect(
     state => state,
     { updateModel },

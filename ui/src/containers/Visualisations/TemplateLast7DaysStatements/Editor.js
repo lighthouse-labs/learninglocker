@@ -1,13 +1,12 @@
 import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Map, List } from 'immutable';
+import { Map } from 'immutable';
 import { Tab } from 'react-toolbox/lib/tabs';
 import Tabs from 'ui/components/Material/Tabs';
 import CounterAxesEditor from 'ui/containers/VisualiseForm/StatementsForm/AxesEditor/CounterAxesEditor';
+import VisualiseFilterForm from 'ui/containers/VisualiseFilterForm';
 import BenchmarkingEnabledSwitch from '../components/BenchmarkingEnabledSwitch';
 import DescriptionForm from '../components/DescriptionForm';
-import ContextLabelForm from '../components/ContextLabelForm';
-import FiltersForm from '../components/FiltersForm';
 import PreviewPeriodPicker from '../components/PreviewPeriodPicker';
 import TimezoneForm from '../components/TimezoneForm';
 import Viewer from './Viewer';
@@ -31,24 +30,6 @@ const Editor = ({
       id,
       path: 'description',
       value: description,
-    });
-  }, [id]);
-
-  const onChangeContextLabel = useCallback((contextLabel) => {
-    updateModel({
-      schema: 'visualisation',
-      id,
-      path: 'contextLabel',
-      value: contextLabel,
-    });
-  }, [id]);
-
-  const onChangeFilters = useCallback((filters) => {
-    updateModel({
-      schema: 'visualisation',
-      id,
-      path: 'filters',
-      value: filters,
     });
   }, [id]);
 
@@ -94,13 +75,9 @@ const Editor = ({
             </Tab>
 
             <Tab key="series" label="Series">
-              <FiltersForm
-                visualisationId={id}
-                filters={model.get('filters', new List())}
-                canEditLabel={false}
-                timezone={model.get('timezone')}
-                orgTimezone={orgTimezone}
-                onChange={onChangeFilters} />
+              <VisualiseFilterForm
+                model={model}
+                orgTimezone={orgTimezone} />
             </Tab>
 
             <Tab key="options" label="Options">
@@ -114,11 +91,6 @@ const Editor = ({
                 timezone={model.get('timezone', null)}
                 orgTimezone={orgTimezone}
                 onChange={onChangeTimezone} />
-
-              <ContextLabelForm
-                visualisationId={id}
-                contextLabel={model.get('contextLabel')}
-                onChange={onChangeContextLabel} />
             </Tab>
           </Tabs>
         </div>

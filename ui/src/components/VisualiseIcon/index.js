@@ -1,7 +1,8 @@
 /* eslint-disable react/jsx-indent */
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import classNames from 'classnames';
 import {
   LEADERBOARD,
   XVSY,
@@ -15,13 +16,12 @@ import {
   TEMPLATE_MOST_POPULAR_ACTIVITIES,
   TEMPLATE_MOST_POPULAR_VERBS,
   TEMPLATE_WEEKDAYS_ACTIVITY,
-  TEMPLATE_STREAM_INTERACTIONS_VS_ENGAGEMENT,
-  TEMPLATE_STREAM_COMMENT_COUNT,
-  TEMPLATE_STREAM_LEARNER_INTERACTIONS_BY_DATE_AND_VERB,
-  TEMPLATE_STREAM_USER_ENGAGEMENT_LEADERBOARD,
-  TEMPLATE_STREAM_PROPORTION_OF_SOCIAL_INTERACTIONS,
-  TEMPLATE_STREAM_ACTIVITIES_WITH_MOST_COMMENTS,
-  TEMPLATE_LEARNING_EXPERIENCE_TYPE,
+  TEMPLATE_CURATR_INTERACTIONS_VS_ENGAGEMENT,
+  TEMPLATE_CURATR_COMMENT_COUNT,
+  TEMPLATE_CURATR_LEARNER_INTERACTIONS_BY_DATE_AND_VERB,
+  TEMPLATE_CURATR_USER_ENGAGEMENT_LEADERBOARD,
+  TEMPLATE_CURATR_PROPORTION_OF_SOCIAL_INTERACTIONS,
+  TEMPLATE_CURATR_ACTIVITIES_WITH_MOST_COMMENTS,
 } from 'lib/constants/visualise';
 import {
   LEADERBOARD_GREY_IMAGE,
@@ -39,10 +39,7 @@ import {
   TABLE_GREY_IMAGE,
   TABLE_IMAGE,
 } from './assets';
-
-const Image = styled.img`
-  height: ${props => props.isSmall && '30px' || 'initial'}
-`;
+import styles from './style.css';
 
 /**
  * @param {string} type
@@ -86,19 +83,17 @@ const getImageSrc = (type, sourceView) => {
     case TEMPLATE_MOST_ACTIVE_PEOPLE:
     case TEMPLATE_MOST_POPULAR_ACTIVITIES:
     case TEMPLATE_MOST_POPULAR_VERBS:
-    case TEMPLATE_STREAM_USER_ENGAGEMENT_LEADERBOARD:
-    case TEMPLATE_STREAM_ACTIVITIES_WITH_MOST_COMMENTS:
-      return LEADERBOARD_GREY_IMAGE;
-    case TEMPLATE_LEARNING_EXPERIENCE_TYPE:
+    case TEMPLATE_CURATR_USER_ENGAGEMENT_LEADERBOARD:
+    case TEMPLATE_CURATR_ACTIVITIES_WITH_MOST_COMMENTS:
       return LEADERBOARD_GREY_IMAGE;
     case XVSY:
       return XVSY_IMAGE;
-    case TEMPLATE_STREAM_INTERACTIONS_VS_ENGAGEMENT:
+    case TEMPLATE_CURATR_INTERACTIONS_VS_ENGAGEMENT:
       return XVSY_GREY_IMAGE;
     case STATEMENTS:
       return STATEMENTS_IMAGE;
     case TEMPLATE_WEEKDAYS_ACTIVITY:
-    case TEMPLATE_STREAM_LEARNER_INTERACTIONS_BY_DATE_AND_VERB:
+    case TEMPLATE_CURATR_LEARNER_INTERACTIONS_BY_DATE_AND_VERB:
       return STATEMENTS_GREY_IMAGE;
     case FREQUENCY:
       return FREQUENCY_IMAGE;
@@ -107,11 +102,11 @@ const getImageSrc = (type, sourceView) => {
     case COUNTER:
       return COUNTER_IMAGE;
     case TEMPLATE_LAST_7_DAYS_STATEMENTS:
-    case TEMPLATE_STREAM_COMMENT_COUNT:
+    case TEMPLATE_CURATR_COMMENT_COUNT:
       return COUNTER_GREY_IMAGE;
     case PIE:
       return PIE_IMAGE;
-    case TEMPLATE_STREAM_PROPORTION_OF_SOCIAL_INTERACTIONS:
+    case TEMPLATE_CURATR_PROPORTION_OF_SOCIAL_INTERACTIONS:
       return PIE_GREY_IMAGE;
     default:
       return '';
@@ -128,10 +123,14 @@ const VisualiseIcon = ({
     return null;
   }
 
+  const classes = classNames({
+    [styles.visualisationSmall]: isSmall,
+  });
+
   // TODO: alt should be mapped from image src, not type
   return (
-    <Image
-      isSmall={isSmall}
+    <img
+      className={classes}
       src={src}
       alt={getTitle(type)} />
   );
@@ -143,4 +142,4 @@ VisualiseIcon.propTypes = {
   isSmall: PropTypes.bool,
 };
 
-export default React.memo(VisualiseIcon);
+export default withStyles(styles)(React.memo(VisualiseIcon));

@@ -7,7 +7,6 @@ import buildTemplateMostActivePeople from 'ui/containers/Visualisations/Template
 import buildTemplateMostPopularActivities from 'ui/containers/Visualisations/TemplateMostPopularActivities/buildModel';
 import buildTemplateMostPopularVerbs from 'ui/containers/Visualisations/TemplateMostPopularVerbs/buildModel';
 import buildTemplateWeekdaysActivity from 'ui/containers/Visualisations/TemplateWeekdaysActivity/buildModel';
-import buildTemplateLearningExperienceType from 'ui/containers/Visualisations/TemplateLearningExperienceType/buildModel';
 import { addModel } from '../models';
 
 export const CREATE_GETTING_STARTED = 'learninglocker/dashboard/CREATE_GETTING_STARTED';
@@ -49,11 +48,6 @@ const createVisualisations = async ({ dispatch, userId }) => {
       props: buildTemplateWeekdaysActivity(new Map({ owner: userId })),
       isExpanded: false,
     })),
-    dispatch(addModel({
-      schema: 'visualisation',
-      props: buildTemplateLearningExperienceType(new Map({ owner: userId })),
-      isExpanded: false,
-    }))
   ]);
 
   return results.map(r => r.model.get('_id'));
@@ -67,7 +61,6 @@ function* createGettingStarted({ userId, organisationId, dispatch }) {
     props: {
       owner: userId,
       title: 'Getting Started',
-      type: 'gettingStarted',
       isExpanded: true,
       widgets: [
         { x: 0, y: 0, w: 6, h: 8, visualisation: visualisationIds[0] },

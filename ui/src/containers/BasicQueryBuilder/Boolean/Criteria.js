@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Map } from 'immutable';
+import styles from '../styles.css';
 import Criterion from './Criterion';
 
 export default class Criteria extends Component {
@@ -61,12 +62,11 @@ export default class Criteria extends Component {
 
   render = () => (
     <div>
-      {
-        this
-          .getCriteria()
-          .map(this.renderCriterion)
-          .valueSeq()
-      }
+      <div className={styles.criteria}>
+        <div>
+          {this.getCriteria().map(this.renderCriterion).valueSeq()}
+        </div>
+      </div>
     </div>
   );
 }

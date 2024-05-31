@@ -1,16 +1,15 @@
 import React from 'react';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { compose, withProps } from 'recompose';
-import styled from 'styled-components';
 import { withModel } from 'ui/utils/hocs';
 import { identifierTypeDisplays } from '../constants';
 import IfiViewer from '../IfiViewer';
-import { tableDataStyle } from './tableDataStyle';
-
-const TableData = styled.td`${tableDataStyle}`;
+import styles from './styles.css';
 
 const enhance = compose(
   withProps({ schema: 'personaIdentifier' }),
-  withModel
+  withModel,
+  withStyles(styles)
 );
 
 const render = ({ model }) => {
@@ -18,12 +17,12 @@ const render = ({ model }) => {
   const identifierValue = model.getIn(['ifi', 'value']);
   return (
     <tr>
-      <TableData>
+      <td className={styles.td}>
         {identifierTypeDisplays[identifierType]}
-      </TableData>
-      <TableData>
+      </td>
+      <td className={styles.td}>
         <IfiViewer identifierType={identifierType} identifierValue={identifierValue} />
-      </TableData>
+      </td>
     </tr>
   );
 };

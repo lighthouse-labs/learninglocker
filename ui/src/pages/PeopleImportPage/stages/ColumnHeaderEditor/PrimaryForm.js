@@ -1,6 +1,8 @@
 import React from 'react';
 import uuid from 'uuid';
-import { InputField } from './InputField';
+import { compose } from 'recompose';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import styles from './styles.css';
 
 const PrimaryForm = ({
   primary,
@@ -9,7 +11,7 @@ const PrimaryForm = ({
 }) => {
   const formId = uuid.v4();
   return (
-    <InputField className="form-group">
+    <div className={`form-group ${styles.inputField}`}>
       <label htmlFor={formId}>
         Order
       </label>
@@ -21,8 +23,10 @@ const PrimaryForm = ({
         value={primary}
         type="number"
         disabled={disabled} />
-    </InputField>
+    </div>
   );
 };
 
-export default PrimaryForm;
+export default compose(
+  withStyles(styles)
+)(PrimaryForm);

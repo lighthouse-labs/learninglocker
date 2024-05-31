@@ -7,7 +7,9 @@ import {
   setInMetadata
 } from 'ui/redux/modules/metadata';
 import { connect } from 'react-redux';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { ModelListItem } from './index';
+import styles from './modellistitem.css';
 
 // Doesn't use the with model hoc, uses the raw immutable js model.
 
@@ -30,6 +32,7 @@ const stateProps = withProps(({
 }));
 
 export default compose(
+  withStyles(styles),
   withProps(({ model }) => ({
     id: model.get('_id')
   })),

@@ -1,12 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import { Map } from 'immutable';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { compose, withProps, setPropTypes, withState } from 'recompose';
 import { withModels } from 'ui/utils/hocs';
 import AddTextIconButton from 'ui/components/TextIconButton/AddTextIconButton';
 import NewRow from './NewRow';
 import SavedRow from './SavedRow';
-import { TableActionsHeader, TableHeader } from './tableComponents';
+import styles from './styles.css';
 
 const enhance = compose(
   setPropTypes({
@@ -19,7 +21,8 @@ const enhance = compose(
     sort: new Map({ _id: -1 }),
   })),
   withModels,
-  withState('isNewAttributeVisible', 'changeNewAttributeVisibility', false)
+  withState('isNewAttributeVisible', 'changeNewAttributeVisibility', false),
+  withStyles(styles)
 );
 
 const render = ({
@@ -41,15 +44,15 @@ const render = ({
   };
   return (
     <div>
-      <div style={{ textAlign: 'right', marginBottom: '8px' }}>
+      <div className={styles.buttons}>
         <AddTextIconButton text="Add Attribute" onClick={handleShowNewRow} />
       </div>
-      <table style={{ width: '100%' }}>
+      <table className={styles.table}>
         <thead>
           <tr>
-            <TableHeader>Name</TableHeader>
-            <TableHeader>Value</TableHeader>
-            <TableActionsHeader>Actions</TableActionsHeader>
+            <th className={styles.td}>Name</th>
+            <th className={styles.td}>Value</th>
+            <th className={classNames(styles.td, styles.actions)}>Actions</th>
           </tr>
         </thead>
         <tbody>

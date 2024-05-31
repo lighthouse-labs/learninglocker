@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Map, List } from 'immutable';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import Tabs from 'ui/components/Material/Tabs';
 import { Tab } from 'react-toolbox/lib/tabs';
 import { connect } from 'react-redux';
@@ -12,10 +13,12 @@ import { withSchema } from 'ui/utils/hocs';
 import AddModelPrompt from './AddModelPrompt';
 import ExportDownloadManager from './ExportDownloadManager';
 import ExportForm from './ExportForm';
+import styles from './styles.css';
 
 const schema = 'export';
 
 const enhance = compose(
+  withStyles(styles),
   withSchema(schema),
   withState('activeTab', 'setActiveTab', 0),
   withState('selectedExportId', 'setSelectedExportId'),
@@ -55,7 +58,7 @@ const enhance = compose(
 
 const renderSelectedExport = ({ pipelines, selectedExportId, setSelectedExport }) => (
   <div>
-    <div key={0} style={{ display: 'flex' }}>
+    <div key={0} className={styles.pickerContainer}>
       <ModelAutoComplete
         schema={schema}
         id={selectedExportId}

@@ -1,9 +1,11 @@
 import React from 'react';
 import uuid from 'uuid';
+import { compose } from 'recompose';
 import DebounceInput from 'react-debounce-input';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { getAccountHomePageColumns } from 'lib/services/importPersonas/personasImportHelpers';
 import Switch from 'ui/components/Material/Switch';
-import { InputField } from './InputField';
+import styles from './styles.css';
 
 /**
  * @param {boolean} _.disabled
@@ -33,7 +35,7 @@ const AccountHomePageForm = ({
   ));
 
   return (
-    <InputField className="form-group">
+    <div className={`form-group ${styles.inputField}`}>
       <label htmlFor={formId}>
         Account home page
       </label>
@@ -52,30 +54,32 @@ const AccountHomePageForm = ({
           disabled={disabled} />
 
         {!useConstant && (
-          <select
-            title="Related Column"
-            className="form-control"
-            onChange={onRelatedColumnChange}
-            value={relatedColumn}
-            disabled={disabled}>
-            <option disabled />
-            {options}
-          </select>
-        )}
+        <select
+          title="Related Column"
+          className="form-control"
+          onChange={onRelatedColumnChange}
+          value={relatedColumn}
+          disabled={disabled}>
+          <option disabled />
+          {options}
+        </select>
+      )}
 
         {useConstant && (
-          <DebounceInput
-            className="form-control"
-            debounceTimeout={377}
-            value={constant}
-            onChange={e => onConstantChange(e.target.value)}
-            disabled={disabled}
-            placeholder="https://example.com" />
-        )}
+        <DebounceInput
+          className="form-control"
+          debounceTimeout={377}
+          value={constant}
+          onChange={e => onConstantChange(e.target.value)}
+          disabled={disabled}
+          placeholder="https://example.com" />
+      )}
 
       </form>
-    </InputField>
+    </div>
   );
 };
 
-export default AccountHomePageForm;
+export default compose(
+  withStyles(styles)
+)(AccountHomePageForm);

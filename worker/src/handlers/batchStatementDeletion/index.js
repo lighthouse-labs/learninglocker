@@ -12,5 +12,6 @@ export default () => {
   Queue.subscribe({
     queueName: BATCH_STATEMENT_DELETION_QUEUE,
     handler: batchStatementDeletion,
+    visibilityTimeout: 60 * 60 // 1 hour
   }, defaultHandleResponse);
 };

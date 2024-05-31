@@ -17,7 +17,6 @@ import {
   STATEMENT_EXTRACT_PERSONAS_QUEUE,
   STATEMENT_FORWARDING_QUEUE
 } from 'lib/constants/statements';
-import { isAllowedWorkerQueue } from './allowedWorkerQueues';
 
 const queueDependencies = {
   [STATEMENT_QUERYBUILDERCACHE_QUEUE]: {
@@ -50,10 +49,8 @@ export const addStatementToPendingQueues = (statement, passedQueues, done) => {
     const queueCompleted = includes(completedQueues, queueName);
     // or is this queue in the queues being processed?
     const queueProcessing = includes(processingQueues, queueName);
-    // or is an allowed queue?
-    const isAllowed = isAllowedWorkerQueue(queueName);
 
-    return !preReqsCompleted || queueCompleted || queueProcessing || !isAllowed;
+    return !preReqsCompleted || queueCompleted || queueProcessing;
   });
 
   return Statement.updateOne(
@@ -70,7 +67,8 @@ export const addStatementToPendingQueues = (statement, passedQueues, done) => {
         logger.debug('ADDING STATEMENT TO QUEUE', queueName);
         const response = Queue.publish({
           queueName,
-          payload: { statementId: statement._id }
+          payload: { statementId: statement._id },
+          opts: { lifo: true }
         });
         return highland(response);
       }).apply(() => {

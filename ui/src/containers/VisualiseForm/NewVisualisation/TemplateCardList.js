@@ -1,24 +1,23 @@
 import React from 'react';
-import { CardList } from 'ui/containers/VisualiseForm/NewVisualisation/styled';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import TemplateActivityOverTimeCard from 'ui/containers/Visualisations/TemplateActivityOverTime/Card';
 import TemplateLast7DaysStatementsCard from 'ui/containers/Visualisations/TemplateLast7DaysStatements/Card';
 import TemplateMostPopularVerbsCard from 'ui/containers/Visualisations/TemplateMostPopularVerbs/Card';
 import TemplateMostPopularActivitiesCard from 'ui/containers/Visualisations/TemplateMostPopularActivities/Card';
 import TemplateMostActivePeopleCard from 'ui/containers/Visualisations/TemplateMostActivePeople/Card';
 import TemplateWeekdaysActivityCard from 'ui/containers/Visualisations/TemplateWeekdaysActivity/Card';
-import TemplateStreamInteractionsVsEngagementCard from 'ui/containers/Visualisations/TemplateStreamInteractionsVsEngagement/Card';
-import TemplateStreamCommentCountCard from 'ui/containers/Visualisations/TemplateStreamCommentCount/Card';
-import TemplateStreamLearnerInteractionsByDateAndVerbCard from 'ui/containers/Visualisations/TemplateStreamLearnerInteractionsByDateAndVerb/Card';
-import TemplateStreamUserEngagementLeaderboardCard from 'ui/containers/Visualisations/TemplateStreamUserEngagementLeaderboard/Card';
-import TemplateStreamProportionOfSocialInteractionsCard from 'ui/containers/Visualisations/TemplateStreamProportionOfSocialInteractions/Card';
-import TemplateStreamActivitiesWithMostCommentsCard from 'ui/containers/Visualisations/TemplateStreamActivitiesWithMostComments/Card';
-import TemplateLearningExperienceType from 'ui/containers/Visualisations/TemplateLearningExperienceType/Card';
+import TemplateCuratrInteractionsVsEngagementCard from 'ui/containers/Visualisations/TemplateCuratrInteractionsVsEngagement/Card';
+import TemplateCuratrCommentCountCard from 'ui/containers/Visualisations/TemplateCuratrCommentCount/Card';
+import TemplateCuratrLearnerInteractionsByDateAndVerbCard from 'ui/containers/Visualisations/TemplateCuratrLearnerInteractionsByDateAndVerb/Card';
+import TemplateCuratrUserEngagementLeaderboardCard from 'ui/containers/Visualisations/TemplateCuratrUserEngagementLeaderboard/Card';
+import TemplateCuratrProportionOfSocialInteractionsCard from 'ui/containers/Visualisations/TemplateCuratrProportionOfSocialInteractions/Card';
+import TemplateCuratrActivitiesWithMostCommentsCard from 'ui/containers/Visualisations/TemplateCuratrActivitiesWithMostComments/Card';
+import styles from './styles.css';
 
 const TemplateCardList = ({ model, saveModel }) => (
-  <CardList id="new-visualisation-templates">
-    <TemplateLearningExperienceType
-      model={model}
-      saveModel={saveModel} />
+  <div
+    id="new-visualisation-templates"
+    className={styles.cardList}>
 
     <TemplateLast7DaysStatementsCard
       model={model}
@@ -44,30 +43,30 @@ const TemplateCardList = ({ model, saveModel }) => (
       model={model}
       saveModel={saveModel} />
 
-    <TemplateStreamInteractionsVsEngagementCard
+    <TemplateCuratrInteractionsVsEngagementCard
       model={model}
       saveModel={saveModel} />
 
-    <TemplateStreamCommentCountCard
+    <TemplateCuratrCommentCountCard
       model={model}
       saveModel={saveModel} />
 
-    <TemplateStreamLearnerInteractionsByDateAndVerbCard
+    <TemplateCuratrLearnerInteractionsByDateAndVerbCard
       model={model}
       saveModel={saveModel} />
 
-    <TemplateStreamUserEngagementLeaderboardCard
+    <TemplateCuratrUserEngagementLeaderboardCard
       model={model}
       saveModel={saveModel} />
 
-    <TemplateStreamProportionOfSocialInteractionsCard
+    <TemplateCuratrProportionOfSocialInteractionsCard
       model={model}
       saveModel={saveModel} />
 
-    <TemplateStreamActivitiesWithMostCommentsCard
+    <TemplateCuratrActivitiesWithMostCommentsCard
       model={model}
       saveModel={saveModel} />
-  </CardList>
+  </div>
 );
 
-export default TemplateCardList;
+export default withStyles(styles)(TemplateCardList);

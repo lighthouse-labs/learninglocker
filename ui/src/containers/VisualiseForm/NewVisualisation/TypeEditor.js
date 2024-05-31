@@ -80,7 +80,7 @@ const TypeEditor = ({
       {typeState && (
         <div className="row">
           <div className="col-xs-10 text-left">
-            <p style={{ padding: 8 }}>{getText(typeState)}</p>
+            <p>{getText(typeState)}</p>
           </div>
 
           <div className="col-xs-2 text-right">

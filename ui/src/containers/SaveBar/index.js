@@ -1,84 +1,69 @@
 import React from 'react';
-import { fromJS, List } from 'immutable';
+import { List, fromJS } from 'immutable';
 import { createSelector } from 'reselect';
 import { connect } from 'react-redux';
-import { COMPLETED, FAILED, IN_PROGRESS } from 'ui/utils/constants';
+import { IN_PROGRESS, COMPLETED, FAILED } from 'ui/utils/constants';
+import ProgressBar from 'react-toolbox/lib/progress_bar';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import { omitBy, isFunction } from 'lodash';
 import { compose } from 'recompose';
+import classNames from 'classnames';
 import SaveBarErrors from 'ui/containers/SaveBarErrors';
-import {
-  Container,
-  Label,
-  StyledProgressBar,
-} from 'ui/containers/SaveBar/styled';
+import styles from './styles.css';
 
 export const savingSelector = () => createSelector(
   state => // models
-    state.models
-      .map(
-        model =>
-          model.filter(item =>
-            item && item.getIn &&
-            (
-              !!item.getIn(['remoteCache', 'requestState']) ||
-              !!item.getIn(['deleteState'])
-            )
+    state.models.map(model =>
+      model.filter(item =>
+        item && item.getIn &&
+          (
+            !!item.getIn(['remoteCache', 'requestState']) ||
+            !!item.getIn(['deleteState'])
           )
       )
-      .toList()
-      .flatMap(
-        model => model
-          .toList()
-          .flatMap(
-            item =>
-              // item && item.getIn && item.getIn(['remoteCache', 'requestState'])
-              new List([
-                item && item.getIn && item.getIn(['remoteCache', 'requestState']),
-                item && item.getIn && item.getIn(['deleteState'])
-              ])
-          )
-      )
+    ).toList().flatMap((model) => {
+      const out = model.toList().flatMap((item) => {
+        // item && item.getIn && item.getIn(['remoteCache', 'requestState'])
+        const out2 = new List([
+          item && item.getIn && item.getIn(['remoteCache', 'requestState']),
+          item && item.getIn && item.getIn(['deleteState'])
+        ]);
+        return out2;
+      });
+
+      return out;
+    })
   ,
   state => // uploadPersonas
-    state
-      .uploadPersonas
-      .filter(model => model && model.getIn && !!model.getIn(['requestState']))
-      .toList()
-      .map(model => model.getIn(['requestState'])),
-  state => // uploadPeople
-    state
-      .mergePersona
-      .filter(model => model && model.getIn && !!model.getIn(['requestState']))
-      .toList()
-      .map(model => model.getIn(['requestState'])),
+    state.uploadPersonas.filter(model =>
+      model && model.getIn && !!model.getIn(['requestState'])
+    ).toList().map(model =>
+      model.getIn(['requestState'])
+    ),
+  state => // uploadpeople
+    state.mergePersona.filter(model =>
+      model && model.getIn && !!model.getIn(['requestState'])
+    ).toList().map(model =>
+      model.getIn(['requestState'])
+    ),
   state => // update UserOrganisationSettings
     fromJS(state.userOrganisationSettings || {})
       .flatMap((v1, k1) => v1.mapKeys(k2 => `${k1}-${k2}`))
       .filter(model => model && model.getIn && !!model.getIn(['requestState']))
       .toList()
       .map(model => model.getIn(['requestState'])),
-  (
-    saving,
-    uploadPersonasSaving,
-    mergePersonaSaving,
-    userOrganisationSettingsSaving
-  ) => {
-    saving = saving
-      .concat(uploadPersonasSaving)
-      .concat(mergePersonaSaving)
-      .concat(userOrganisationSettingsSaving);
+  (saving, uploadPersonasSaving, mergePersonaSaving, userOrganisationSettingsSaving) => {
+    saving = saving.concat(uploadPersonasSaving).concat(mergePersonaSaving).concat(userOrganisationSettingsSaving);
 
     if (saving.includes(IN_PROGRESS)) {
       return IN_PROGRESS;
     }
-
     if (saving.includes(FAILED)) {
       return FAILED;
     }
-
     if (saving.includes(COMPLETED)) {
       return COMPLETED;
     }
-
     return false;
   }
 );
@@ -99,26 +84,24 @@ const getLabel = (value) => {
 const SaveBar = ({
   saving
 }) => {
-  if (!saving) {
-    return null;
-  }
-
-  const savingStageClassName = saving.toLowerCase();
+  // saving = COMPLETED;
+  const styles2 = omitBy(styles, isFunction);
 
   return (
-    <Container className={'save-bar'}>
-      <StyledProgressBar
-        savingStageClassName={savingStageClassName}
+    <div className={`${styles.container} save-bar`}>
+      {saving && <ProgressBar
+        className={styles2[saving.toLowerCase()]}
         mode={saving === IN_PROGRESS ? 'indeterminate' : 'determinate'}
-        value={100} />
-      <Label savingStageClassName={savingStageClassName}>
-        {getLabel(saving)}
-      </Label>
+        value={100}
+        theme={styles2} />
+      }
+      {saving && <div className={classNames(styles.label, styles2[saving.toLowerCase()])}>{getLabel(saving)}</div>}
       <SaveBarErrors />
-    </Container>);
+    </div>);
 };
 
 const SaveBarComposed = compose(
+  withStyles(styles),
   connect(
     state => ({
       saving: savingSelector()(state)

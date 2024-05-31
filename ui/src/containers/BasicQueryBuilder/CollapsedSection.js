@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Map } from 'immutable';
+import classNames from 'classnames';
 import decodeDot from 'lib/helpers/decodeDot';
-import { CollapsedSectionWrapper } from 'ui/containers/BasicQueryBuilder/styled';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import styles from './styles.css';
 
 class CollapsedSection extends Component {
   static propTypes = {
@@ -25,15 +27,17 @@ class CollapsedSection extends Component {
     const { section } = this.props;
     const title = decodeDot(section.get('title', ''));
     const containsCriteria = this.props.used;
+    const classes = classNames(styles.collapsedSection, {
+      [styles.usedCollapsedSection]: containsCriteria,
+      [styles.unusedCollapsedSection]: !containsCriteria,
+    });
 
     return (
-      <CollapsedSectionWrapper
-        isUsed={containsCriteria}
-        onClick={this.expandSection} >
+      <a className={classes} onClick={this.expandSection}>
         <i className="ion-plus-circled" /> {title}
-      </CollapsedSectionWrapper>
+      </a>
     );
   }
 }
 
-export default CollapsedSection;
+export default withStyles(styles)(CollapsedSection);

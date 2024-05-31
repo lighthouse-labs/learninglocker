@@ -2,16 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Map } from 'immutable';
 import { compose, setPropTypes } from 'recompose';
-import styled from 'styled-components';
-
-const Key = styled.span`
-  font-weight: bold;
-`;
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import styles from './styles.css';
 
 const enhance = compose(
   setPropTypes({
     identifierValue: PropTypes.instanceOf(Map).isRequired,
-  })
+  }),
+  withStyles(styles)
 );
 
 const render = ({ identifierValue }) => {
@@ -20,12 +18,12 @@ const render = ({ identifierValue }) => {
   return (
     <div>
       <div>
-        <Key>Website: </Key>
-        <span>{homePage}</span>
+        <span className={styles.key}>Website: </span>
+        <span className={styles.value}>{homePage}</span>
       </div>
       <div>
-        <Key>User ID: </Key>
-        <span>{name}</span>
+        <span className={styles.key}>User ID: </span>
+        <span className={styles.value}>{name}</span>
       </div>
     </div>
   );

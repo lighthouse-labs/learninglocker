@@ -1,26 +1,23 @@
+import React from 'react';
 import 'jest-enzyme';
 import { shallow } from 'enzyme';
 import { Map } from 'immutable';
 import { createDefaultTitleWithIcon, getPercentage } from './defaultTitles';
 import chevronDownIcon from './assets/ll-chevron-down-icon.svg';
 
-describe('defaultTitles', () => {
-  test('should create a title with an icon', () => {
-    const model = new Map({
-      _id: '1111',
-      description: 'dave',
-    });
-
-    const rendered = shallow(createDefaultTitleWithIcon(model));
-
-    expect(rendered).toMatchSnapshot();
+test('defaultTitles should create a title with an icon', () => {
+  const model = new Map({
+    _id: '1111',
+    description: 'dave',
   });
 
-  test('should getPercentage', () => {
-    const result = getPercentage(50, 100);
+  const rendered = shallow(<div>{createDefaultTitleWithIcon(model)}</div>);
+  expect(rendered).toMatchSnapshot();
+});
 
-    expect(result.result).toEqual('100%');
+test('defaultTitle should getPercentage', () => {
+  const result = getPercentage(50, 100);
 
-    expect(result.icon).toBe(chevronDownIcon);
-  });
+  expect(result.result).toEqual('100%');
+  expect(result.icon).toBe(chevronDownIcon);
 });
