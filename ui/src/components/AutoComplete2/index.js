@@ -1,52 +1,54 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import React from 'react';
+import { compose, withState } from 'recompose';
 import FocusGroup from 'ui/components/FocusGroup/FocusGroup';
-
-const AutoCompleteWrapper = styled.div`
-  position: relative;
-  flex-grow: 1;
-`;
-
-const DropdownContainer = styled.div`
-  position: absolute;
-   z-index: 1;
-   width: 100%;
-`;
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import styles from './styles.css';
 
 /**
  * renders an autocomplete component with an input and suggestions
  */
 const AutoComplete = ({
   // renderers
-  renderOptions = () => { },
-  renderInput = () => { },
+  renderOptions = () => {},
+  renderInput = () => {},
 
   // event handlers
   onKeyPress,
+
+  // local state
+  hasInputFocus,
+  setInputFocus,
 }) => {
-  const [hasInputFocus, setInputFocus] = useState(false);
   const onBlurInput = () => {
     setInputFocus(false);
   };
 
   return (
-    <AutoCompleteWrapper onKeyPress={onKeyPress}>
+    <div onKeyPress={onKeyPress} className={styles.wrapper}>
       <FocusGroup
-        onFocus={() => { }}
+        onFocus={() => {}}
         onBlur={onBlurInput}
         hasFocus={hasInputFocus} >
-        {
-          renderInput({
-            onFocus: () => setInputFocus(true),
-            hasFocus: hasInputFocus
-          })
-        }
-        <DropdownContainer>
-          {hasInputFocus && renderOptions({ onKeyPress, onBlur: onBlurInput })}
-        </DropdownContainer>
+        {renderInput({
+          onFocus: () => setInputFocus(true),
+          hasFocus: hasInputFocus
+        })}
+        <div
+          className={styles.optionsWrapper}>
+          {hasInputFocus &&
+            renderOptions({ onKeyPress, onBlur: onBlurInput })
+          }
+        </div>
       </FocusGroup>
-    </AutoCompleteWrapper>
+    </div>
   );
 };
 
-export default AutoComplete;
+const inputFocusState = withState('hasInputFocus', 'setInputFocus', false);
+const optionsFocusState = withState('hasOptionFocus', 'setOptionFocus', false);
+const focusState = compose(inputFocusState, optionsFocusState);
+
+export default compose(
+  withStyles(styles),
+  focusState
+)(AutoComplete);

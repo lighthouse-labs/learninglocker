@@ -2,21 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, setPropTypes, withState, withProps, withHandlers } from 'recompose';
 import { Map, fromJS, Iterable } from 'immutable';
-import styled from 'styled-components';
 import isString from 'lodash/isString';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import ModelAutoComplete from 'ui/containers/ModelAutoComplete';
 import { queryToStringList } from 'ui/utils/queries';
 import { withModel } from 'ui/utils/hocs';
-import { ButtonContainer } from 'ui/containers/QueryBuilder/styled';
-
-const QueryButtons = styled.div`
-  margin-bottom: 16px;
-  display: flex;
-`;
+import styles from './savedqueries.css'; // 'ui/containers/QueryBuilder/savedqueries.css' doesn't work in testing on import
 
 const getConditions = (query) => {
   if (!query) return new Map();
-  const conditions = query.get('conditions', new Map());
+  const conditions = query && query.get('conditions', new Map());
 
   try {
     if (isString(conditions)) return fromJS(JSON.parse(conditions));
@@ -69,6 +64,7 @@ const withSelectedQuery = compose(
 );
 
 const enhance = compose(
+  withStyles(styles),
   setPropTypes({
     onQueryChange: PropTypes.func,
     query: PropTypes.instanceOf(Map)
@@ -98,7 +94,7 @@ const SavedQueries = ({
   const queriesEqualMessage = 'Saved and active queries are the same!';
   const isQueryEmpty = selectedQuery.isEmpty();
   return (
-    <QueryButtons>
+    <div style={{ marginBottom: '16px', display: 'flex' }} className="queryButtons">
       <ModelAutoComplete
         schema="query"
         placeholder="Select a saved query"
@@ -108,7 +104,7 @@ const SavedQueries = ({
         parseOption={parseOption}
         parseOptionTooltip={parseOptionTooltip}
         defaultNewValues={{ conditions: query }} />
-      <ButtonContainer>
+      <div className={styles.buttonContainer}>
         <button
           disabled={isQueryEmpty || queriesEqual}
           className="btn btn-default btn-sm"
@@ -123,8 +119,8 @@ const SavedQueries = ({
           title={queriesEqual ? queriesEqualMessage : 'Load saved query'}>
           <i className="glyphicon glyphicon-save" />
         </button>
-      </ButtonContainer>
-    </QueryButtons>
+      </div>
+    </div>
   );
 };
 

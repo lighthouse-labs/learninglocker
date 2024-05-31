@@ -1,6 +1,8 @@
 import React from 'react';
 import uuid from 'uuid';
-import { InputField } from './InputField';
+import { compose } from 'recompose';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import styles from './styles.css';
 
 /**
  * @param {string} _.relatedColumn
@@ -10,7 +12,7 @@ const AccountNameForm = ({
 }) => {
   const formId = uuid.v4();
   return (
-    <InputField className="form-group">
+    <div className={`form-group ${styles.inputField}`}>
       <label htmlFor={formId} >
         Account name column
       </label>
@@ -24,8 +26,10 @@ const AccountNameForm = ({
           {relatedColumn}
         </option>
       </select>
-    </InputField>
+    </div>
   );
 };
 
-export default AccountNameForm;
+export default compose(
+  withStyles(styles)
+)(AccountNameForm);

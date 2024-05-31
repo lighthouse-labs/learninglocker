@@ -10,8 +10,7 @@ import {
   TEMPLATE_MOST_ACTIVE_PEOPLE,
   TEMPLATE_MOST_POPULAR_ACTIVITIES,
   TEMPLATE_MOST_POPULAR_VERBS,
-  TEMPLATE_STREAM_INTERACTIONS_VS_ENGAGEMENT,
-  TEMPLATE_LEARNING_EXPERIENCE_TYPE
+  TEMPLATE_CURATR_INTERACTIONS_VS_ENGAGEMENT,
 } from 'lib/constants/visualise';
 import NoData from 'ui/components/Graphs/NoData';
 import ScrollableTable from 'ui/components/ScrollableTable';
@@ -81,14 +80,13 @@ const getGroupAxisLabel = (visualisation) => {
   switch (visualisation.get('type')) {
     // Correlation Chart type
     case XVSY:
-    case TEMPLATE_STREAM_INTERACTIONS_VS_ENGAGEMENT:
+    case TEMPLATE_CURATR_INTERACTIONS_VS_ENGAGEMENT:
       return visualisation.getIn(['axesgroup', 'searchString']) || 'Group';
     // Bar Chart type
     case LEADERBOARD:
     case TEMPLATE_MOST_ACTIVE_PEOPLE:
     case TEMPLATE_MOST_POPULAR_ACTIVITIES:
     case TEMPLATE_MOST_POPULAR_VERBS:
-    case TEMPLATE_LEARNING_EXPERIENCE_TYPE:
       return visualisation.get('axesyLabel') || visualisation.getIn(['axesgroup', 'searchString']) || 'Y Axis';
     // Line Chart type
     case FREQUENCY:
@@ -103,7 +101,7 @@ const getValueAxisLabel = (index, visualisation) => {
   switch (visualisation.get('type')) {
     // Correlation Chart type
     case XVSY:
-    case TEMPLATE_STREAM_INTERACTIONS_VS_ENGAGEMENT:
+    case TEMPLATE_CURATR_INTERACTIONS_VS_ENGAGEMENT:
       if (index === 0) {
         return visualisation.get('axesxLabel') || visualisation.getIn(['axesxValue', 'searchString']) || 'X Axis';
       }
@@ -113,8 +111,7 @@ const getValueAxisLabel = (index, visualisation) => {
     case TEMPLATE_MOST_ACTIVE_PEOPLE:
     case TEMPLATE_MOST_POPULAR_ACTIVITIES:
     case TEMPLATE_MOST_POPULAR_VERBS:
-    case TEMPLATE_LEARNING_EXPERIENCE_TYPE:
-      return visualisation.get('axesxLabel') || visualisation.getIn(['axesxValue', 'searchString']) || 'X Axis';
+      return visualisation.get('axesxLabel') || visualisation.getIn(['axesvalue', 'searchString']) || 'X Axis';
     default:
       return visualisation.get('axesyLabel') || visualisation.getIn(['axesvalue', 'searchString']) || 'Y Axis';
   }

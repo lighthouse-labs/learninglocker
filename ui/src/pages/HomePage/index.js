@@ -1,10 +1,10 @@
 /* eslint-disable react/jsx-indent */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
 import Helmet from 'react-helmet';
 import DebounceInput from 'react-debounce-input';
 import { connect } from 'react-redux';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { Card, CardText } from 'react-toolbox/lib/card';
 import { List, ListItem } from 'react-toolbox/lib/list';
 import { Map, List as ImmutList, fromJS } from 'immutable';
@@ -12,23 +12,16 @@ import { AutoSizer, List as VirtualList, InfiniteLoader } from 'react-virtualize
 import { withProps, compose, withState } from 'recompose';
 import { actions as routerActions } from 'redux-router5';
 import moment from 'moment';
-import { isSiteAdminSelector, authenticationSelector, logout, orgLoginStart, loggedInUserSelector, orgLogout } from 'ui/redux/modules/auth';
+import { isSiteAdminSelector, authenticationSelector, logout, orgLoginStart, loggedInUserSelector } from 'ui/redux/modules/auth';
 import { queryStringToQuery } from 'ui/redux/modules/search';
-import { withModel, withSchema } from 'ui/utils/hocs';
+import { withSchema } from 'ui/utils/hocs';
 import Spinner from 'ui/components/Spinner';
 import FullPageBackground from 'ui/components/FullPageBackground';
 import AuthContainer from 'ui/containers/AuthContainer';
 import smallLogo from 'ui/static/smallLogo.png';
 import OrgMemberButton from 'ui/containers/OrgMemberButton';
-import { SITE_SETTINGS_ID } from 'lib/constants/siteSettings';
 import Register from './Register';
-
-const Underline = styled.div`
-  height: 0;
-  border-bottom: 2px solid #DDA476;
-  width: 250px;
-  margin: 0 auto;
-`;
+import styles from './styles.css';
 
 class Home extends Component {
   static propTypes = {
@@ -36,7 +29,6 @@ class Home extends Component {
     fetchMore: PropTypes.func,
     modelCount: PropTypes.number,
     logout: PropTypes.func,
-    orgLogout: PropTypes.func,
     orgLoginStart: PropTypes.func,
     navigateTo: PropTypes.func,
     isSiteAdmin: PropTypes.bool,
@@ -50,19 +42,6 @@ class Home extends Component {
     auth: new Map(),
     authUser: new Map(),
     isSiteAdmin: false
-  }
-
-  componentDidMount = () => {
-    const proceedOnce = sessionStorage.getItem('proceedOnce') === 'true';
-    this.setState({ proceedOnce });
-
-    const sessionStorageSetHandler = () => {
-      this.setState({ proceedOnce: true });
-    };
-
-    document.addEventListener('setProceedOnce', sessionStorageSetHandler, false);
-
-    this.props.orgLogout();
   }
 
   onOrgSearch = (event) => {
@@ -201,78 +180,71 @@ class Home extends Component {
   }
 
   render() {
-    const { auth, isSiteAdmin, models, orgSearch, model, ok } = this.props;
+    const { auth, isSiteAdmin, models, orgSearch } = this.props;
     const error = auth.get('error');
-    const dontShowRegistration = (model.size === 0 || model.get('dontShowRegistration') === true || ok === true);
-    const bypassRegistration = dontShowRegistration || this.state.proceedOnce;
 
     return (
       <FullPageBackground>
         <AuthContainer>
+          <h3>Choose your organisation</h3>
 
-        {bypassRegistration ?
-          <React.Fragment>
-            <Underline />
-            <h3>Choose your organisation</h3>
-            <Card>
-              <CardText>
-                <Helmet title=" - Choose an organisation" />
-                {isSiteAdmin && (
-                  <div>
-                    <h4>Site Administration</h4>
-                    <List selectable ripple>
-                      <ListItem
-                        leftIcon={<i className="ion-ios-people" />}
-                        onClick={this.gotoSiteAdminUsers}
-                        caption="View all users"
-                        flat />
-                      <ListItem
-                        leftIcon={<i className="glyphicon glyphicon-tree-conifer" />}
-                        onClick={this.gotoSiteAdminOrgs}
-                        caption="View all organisations"
-                        flat />
-                    </List>
-                  </div>
-                )}
-
-                {
-                  models.isEmpty() && orgSearch === '' ? (
-                    this.renderNoUserOrgs()
-                  ) : (
-                      <div>
-                        <div>
-                          <h4>Your Organisations</h4>
-                          {
-                            orgSearch !== '' || models.size > 5 ? (
-                              <DebounceInput
-                                className="form-control"
-                                debounceTimeout={377}
-                                value={orgSearch}
-                                onChange={this.onOrgSearch} />
-                            ) : <noscript />
-                          }
-                          {models.isEmpty() ? this.renderEmptySearch() : this.renderOrgList()}
-                        </div>
-                      </div>
-                    )
-                }
-                {error &&
-                  <div className="alert alert-danger" role="alert">
-                    <span className="sr-only">Error:</span> {error}
-                  </div>
-                }
-              </CardText>
-            </Card>
-
-            <div style={{ marginTop: 20, textAlign: 'center' }}>
-              <button className="btn btn-danger" onClick={this.onClickLogout}>
-                <i className="ion ion-log-out" /> Log Out
-              </button>
-            </div>
-          </React.Fragment>
-          :
           <Register />
-        }
+
+          <Card>
+            <CardText>
+              <Helmet title=" - Choose an organisation" />
+              {isSiteAdmin && (
+                <div>
+                  <h4>Site Administration</h4>
+                  <List selectable ripple>
+                    <ListItem
+                      leftIcon={<i className="ion-ios-people" />}
+                      onClick={this.gotoSiteAdminUsers}
+                      caption="View all users"
+                      flat />
+                    <ListItem
+                      leftIcon={<i className="glyphicon glyphicon-tree-conifer" />}
+                      onClick={this.gotoSiteAdminOrgs}
+                      caption="View all organisations"
+                      flat />
+                  </List>
+                </div>
+              )}
+
+              {
+                models.isEmpty() && orgSearch === '' ? (
+                  this.renderNoUserOrgs()
+                ) : (
+                    <div>
+                      <div>
+                        <h4>Your Organisations</h4>
+                        {
+                          orgSearch !== '' || models.size > 5 ? (
+                            <DebounceInput
+                              className="form-control"
+                              debounceTimeout={377}
+                              value={orgSearch}
+                              onChange={this.onOrgSearch} />
+                          ) : <noscript />
+                        }
+                        {models.isEmpty() ? this.renderEmptySearch() : this.renderOrgList()}
+                      </div>
+                    </div>
+                  )
+              }
+              {error &&
+                <div className="alert alert-danger" role="alert">
+                  <span className="sr-only">Error:</span> {error}
+                </div>
+              }
+            </CardText>
+          </Card>
+
+          <div className={styles.loginButtons}>
+            <button className="btn btn-danger" onClick={this.onClickLogout}>
+              <i className="ion ion-log-out" /> Log Out
+            </button>
+          </div>
         </AuthContainer>
       </FullPageBackground>
     );
@@ -280,11 +252,12 @@ class Home extends Component {
 }
 
 export default compose(
+  withStyles(styles),
   connect(state => ({
     auth: authenticationSelector(state),
     authUser: loggedInUserSelector(state),
     isSiteAdmin: isSiteAdminSelector(state)
-  }), { logout, orgLoginStart, orgLogout, navigateTo: routerActions.navigateTo }),
+  }), { logout, orgLoginStart, navigateTo: routerActions.navigateTo }),
   withState('orgSearch', 'setOrgSearch', ''),
   withProps(({ authUser, orgSearch }) => {
     const userOrgs = authUser.get('organisations', new ImmutList());
@@ -295,11 +268,5 @@ export default compose(
     return { filter, sort };
   }),
   withSchema('organisation'),
-  withProps(({ models }) => ({ models: models.toList() })),
-  withProps(() => ({
-    schema: 'siteSettings',
-    id: SITE_SETTINGS_ID
-  })),
-  withModel,
-  withState('ok', 'setOk', false),
+  withProps(({ models }) => ({ models: models.toList() }))
 )(Home);

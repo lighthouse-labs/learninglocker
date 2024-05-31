@@ -19,7 +19,8 @@ export default (queueName, statementHandler) => ({ statementId }, jobDone, optio
       try {
         return Queue.publish({
           queueName: STATEMENT_QUEUE,
-          payload
+          payload,
+          opts: { lifo: true }
         }, jobDone);
       } catch (err) {
         logger.error(`Error publishing status back to ${STATEMENT_QUEUE}`, payload, err);

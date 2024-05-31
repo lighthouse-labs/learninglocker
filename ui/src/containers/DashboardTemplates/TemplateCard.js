@@ -1,17 +1,18 @@
 import React from 'react';
-import { Card } from 'ui/containers/DashboardTemplates/styled';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import styles from './styles.css';
 
 const TemplateCard = ({
   title,
   image,
   onSelect,
 }) => (
-  <Card onClick={onSelect}>
+  <div className={styles.card} onClick={onSelect}>
     <img
       src={image}
       alt={title} />
     <p>{title}</p>
-  </Card>
+  </div>
 );
 
-export default React.memo(TemplateCard);
+export default withStyles(styles)(React.memo(TemplateCard));

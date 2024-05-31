@@ -1,20 +1,7 @@
 import React from 'react';
-import styled from 'styled-components';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import styles from './smallspinner.css';
 
-import { rotation } from 'ui/utils/styled/animations';
+const component = () => <div className={styles.spinner} />;
 
-const SmallSpinner = styled.div`
-  height: 1.5em;
-  width: 1.5em;
-  margin: auto;
-  animation: ${rotation} .6s infinite linear;
-  border-left: 4px solid rgba(245, 170, 53, 0.15);
-  border-right: 4px solid rgba(245, 170, 53, 0.15);
-  border-bottom: 4px solid rgba(245, 170, 53, 0.15);
-  border-top: 4px solid rgba(245, 170, 53, 0.8);
-  border-radius: 100%;
-`;
-
-const smallSpinner = () => (<SmallSpinner />);
-
-export default smallSpinner;
+export default withStyles(styles)(component);

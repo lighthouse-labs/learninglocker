@@ -5,7 +5,7 @@ import { Strategy as BearerStrategy } from 'passport-http-bearer';
 import { OAuth2Strategy as GoogleStrategy } from 'passport-google-oauth';
 import Promise from 'bluebird';
 import CustomStrategy from 'passport-custom';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { find, get, omit, omitBy } from 'lodash';
 import { fromJS } from 'immutable';
@@ -210,27 +210,15 @@ if (
       (accessToken, refreshToken, profile, done) => {
         const userEmail = find(
           profile.emails,
-          email => email.verified === true
+          email => email.type === 'account'
         );
-
-        User.findOne(
-          {
-            email: userEmail.value
-          },
-          (err, user) => {
-            assert.ifError(err);
-
-            if (!user) {
-              return done(null, false, { message: 'User does not exist' });
-            }
-
-            user.googleId = profile.id;
-            user.imageUrl = get(profile, 'photos.0.value');
-            user.name = profile.displayName;
-
-            user.save((err, savedUser) => done(err, savedUser));
-          },
-        );
+        User.findOrCreate({ email: userEmail.value }, (err, user) => {
+          assert.ifError(err);
+          user.googleId = profile.id;
+          user.imageUrl = get(profile, 'photos.0.value');
+          user.name = profile.displayName;
+          user.save((err, savedUser) => done(err, savedUser));
+        });
       }
     )
   );

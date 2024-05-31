@@ -1,16 +1,19 @@
 import React from 'react';
+import classNames from 'classnames';
 import { Map } from 'immutable';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { compose, withState, withProps } from 'recompose';
 import { withModel } from 'ui/utils/hocs';
 import SaveIconButton from 'ui/components/IconButton/SaveIconButton';
 import CancelIconButton from 'ui/components/IconButton/CancelIconButton';
 import TypedInput from 'ui/components/Input/TypedInput';
-import { TableActionsData, TableData } from './tableComponents';
+import styles from './styles.css';
 
 const enhance = compose(
   withProps({ schema: 'personaAttribute' }),
   withModel,
-  withState('attributeValue', 'setAttributeValue', ({ model }) => model.get('value', ''))
+  withState('attributeValue', 'setAttributeValue', ({ model }) => model.get('value', '')),
+  withStyles(styles)
 );
 
 const render = ({
@@ -30,18 +33,18 @@ const render = ({
   };
   return (
     <tr>
-      <TableData>{key}</TableData>
-      <TableData>
+      <td className={styles.td}>{key}</td>
+      <td className={styles.td}>
         <TypedInput
           value={attributeValue}
           placeholder="value"
           onChange={setAttributeValue}
           onSubmit={handleSave} />
-      </TableData>
-      <TableActionsData>
+      </td>
+      <td className={classNames(styles.td, styles.actions)}>
         <SaveIconButton onClick={handleSave} />
         <CancelIconButton onClick={handleCancelEdit} />
-      </TableActionsData>
+      </td>
     </tr>
   );
 };

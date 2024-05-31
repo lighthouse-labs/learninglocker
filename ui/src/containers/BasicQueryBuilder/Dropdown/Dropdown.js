@@ -1,26 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Set } from 'immutable';
-import styled from 'styled-components';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import Option from '../Option/Option';
-
-const StyledDropdown = styled.div`
-  background-color: white;
-  border: 1px solid #ccc;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
-  box-sizing: border-box;
-  margin-top: -1px;
-  max-height: 200px;
-  overflow-y: auto;
-  position: absolute;
-  top: 100%;
-  width: 100%;
-  z-index: 1000;
-
-  &:focus {
-    outline: none;
-  }
-`;
+import styles from './styles.css';
 
 class Dropdown extends Component {
   static propTypes = {
@@ -104,13 +87,14 @@ class Dropdown extends Component {
   );
 
   render = () => (
-    <StyledDropdown
+    <div
       onKeyDown={this.handleKeyDown}
+      className={styles.dropdown}
       ref={(ref) => { this.dropdown = ref; }}
       tabIndex={0}>
       {this.props.children.map(this.renderChild)}
-    </StyledDropdown>
+    </div>
   );
 }
 
-export default Dropdown;
+export default withStyles(styles)(Dropdown);

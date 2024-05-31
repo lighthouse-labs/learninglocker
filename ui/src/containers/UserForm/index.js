@@ -4,7 +4,7 @@ import { compose, withState, withProps } from 'recompose';
 import { withModel } from 'ui/utils/hocs';
 import { Map, List, fromJS } from 'immutable';
 import classNames from 'classnames';
-import styled from 'styled-components';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import ValidationList from 'ui/components/ValidationList';
 import Checkbox from 'ui/components/Material/Checkbox';
 import uuid from 'uuid';
@@ -15,11 +15,7 @@ import {
   loggedInUserId as loggedInUserIdSelector
 } from 'ui/redux/modules/auth';
 import { SITE_ADMIN } from 'lib/constants/scopes';
-
-const VerifiedIcon = styled.i`
-  margin-left: 1em;
-  ${props => props.isVerified && 'color: green;' || 'color: red;'}
-`;
+import styles from './userform.css';
 
 const changeModelAttr = (updateModel, model, attr) => value =>
   updateModel({ path: [attr], value });
@@ -37,15 +33,13 @@ const onPasswordCheckboxChange = (updateModel, model, setChangePasswordChecked) 
 
 const renderVerified = (model) => {
   const verifiedId = uuid.v4();
-  const isVerified = model.get('verified');
-
   return (
     <div className="form-group">
       <label htmlFor={verifiedId} className="control-label">Verified:</label>
       <span id={verifiedId}>
-        <VerifiedIcon
-          isVerified={isVerified}
-          className={`icon ${isVerified ? 'ion-checkmark' : 'ion-close'}`} />
+        {model.get('verified')
+        ? <i className={`icon ion-checkmark ${styles.green}`} />
+        : <i className={`icon ion-close ${styles.red}`} /> }
       </span>
     </div>
   );
@@ -82,7 +76,7 @@ const renderEmail = (model, onChangeAttr, isSiteAdmin) => {
         placeholder="E-Mail"
         value={model.get('email', '')}
         onChange={onChangeAttr('email')} />
-      {model.getIn(['errors', 'messages', 'email'], false) &&
+      { model.getIn(['errors', 'messages', 'email'], false) &&
         (<span className="help-block">
           <ValidationList errors={model.getIn(['errors', 'messages', 'email'])} />
         </span>)
@@ -104,8 +98,8 @@ const renderPasswordChanges = (model, onCheck, changePasswordChecked) => {
             label="Change password"
             onChange={onCheck} />
         ) : (
-            <p className="help-block">Set a valid password in order to verify this user</p>
-          )}
+          <p className="help-block">Set a valid password in order to verify this user</p>
+        )}
       </div>
     </div>
   );
@@ -196,9 +190,9 @@ const UserForm = ({
   const canChangePassword =
     (changePasswordChecked || hasPasswordErrors);
   const isAuthorisedToChangePassword = (
-    isSiteAdmin ||
-    model.get('_id') === loggedInUserId
-  );
+      isSiteAdmin ||
+      model.get('_id') === loggedInUserId
+    );
   const passwordInputsVisible = isAuthorisedToChangePassword && (!model.get('verified') || canChangePassword);
   const passwordGroupClasses = classNames({
     'form-group': true,
@@ -211,7 +205,7 @@ const UserForm = ({
     <div className="row">
       <div className="col-md-12" >
 
-        {renderVerified(model)}
+        {renderVerified(model, styles)}
         {renderName(model, onChangeAttr)}
         {renderEmail(model, onChangeAttr, isSiteAdmin)}
         {isAuthorisedToChangePassword && renderPasswordChanges(model, onPasswordCheckboxChange(updateModel, model, setChangePasswordChecked), canChangePassword)}
@@ -240,6 +234,7 @@ const UserForm = ({
 };
 
 export default compose(
+  withStyles(styles),
   withState('changePasswordChecked', 'setChangePasswordChecked', false),
   withState('password', 'setPassword', ''),
   withState('passwordConfirmation', 'setPasswordConfirmation', ''),

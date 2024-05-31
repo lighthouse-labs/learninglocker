@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { resetPasswordStart, resetRequestStateSelector, resetErrorSelector } from 'ui/redux/modules/auth';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import { compose } from 'recompose';
 import { IN_PROGRESS, COMPLETED, FAILED } from 'ui/utils/constants';
 import { Card } from 'react-toolbox/lib/card';
 import Helmet from 'react-helmet';
@@ -11,6 +13,7 @@ import classNames from 'classnames';
 import FullPageBackground from 'ui/components/FullPageBackground';
 import Link from 'ui/containers/Link';
 import uuid from 'uuid';
+import styles from './styles.css';
 
 class ResetPassword extends Component {
   static propTypes = {
@@ -27,7 +30,7 @@ class ResetPassword extends Component {
       email: this.props.email,
       token: this.props.token,
       password: this.password.value
-    }).catch(() => { });
+    }).catch(() => {});
   }
 
   renderForm() {
@@ -56,7 +59,7 @@ class ResetPassword extends Component {
               )}
             </div>
           </Card>
-          <div style={{ textAlign: 'center', marginTop: 10 }}>
+          <div className={styles.buttonGroup}>
             <button type="submit" className="btn btn-primary">Reset password</button>
           </div>
         </form>
@@ -99,18 +102,21 @@ class ResetPassword extends Component {
       <FullPageBackground width={400}>
         <Helmet title="- Reset Password" />
         <h3 style={{ marginBottom: '50px' }}>Reset your password</h3>
-        {stateView}
+        { stateView }
       </FullPageBackground>
     );
   }
 }
 
-export default connect(
-  state => ({
-    email: get(routeNodeSelector('reset')(state), ['route', 'params', 'email']),
-    token: get(routeNodeSelector('reset')(state), ['route', 'params', 'token']),
-    resetRequestState: resetRequestStateSelector(state),
-    resetError: resetErrorSelector(state)
-  }),
-  { resetPasswordStart }
+export default compose(
+  withStyles(styles),
+  connect(
+    state => ({
+      email: get(routeNodeSelector('reset')(state), ['route', 'params', 'email']),
+      token: get(routeNodeSelector('reset')(state), ['route', 'params', 'token']),
+      resetRequestState: resetRequestStateSelector(state),
+      resetError: resetErrorSelector(state)
+    }),
+    { resetPasswordStart }
+  )
 )(ResetPassword);

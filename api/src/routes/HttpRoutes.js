@@ -13,8 +13,16 @@ import getAuthFromRequest from 'lib/helpers/getAuthFromRequest';
 import getTokenTypeFromAuthInfo from 'lib/services/auth/authInfoSelectors/getTokenTypeFromAuthInfo';
 import getScopesFromAuthInfo from 'lib/services/auth/authInfoSelectors/getScopesFromAuthInfo';
 import getUserIdFromAuthInfo from 'lib/services/auth/authInfoSelectors/getUserIdFromAuthInfo';
+import { SITE_ADMIN } from 'lib/constants/scopes';
 import { jsonSuccess, serverError } from 'api/utils/responses';
 import passport from 'api/auth/passport';
+import {
+  GOOGLE_AUTH_OPTIONS,
+  DEFAULT_PASSPORT_OPTIONS,
+  RESTIFY_DEFAULTS,
+  setNoCacheHeaders,
+  checkOrg,
+} from 'lib/constants/auth';
 import { MANAGER_SELECT } from 'lib/services/auth/selects/models/user.js';
 
 // CONTROLLERS
@@ -28,9 +36,8 @@ import generateIndexesController from 'api/controllers/IndexesController';
 import ImportPersonasController from 'api/controllers/ImportPersonasController';
 import StatementMetadataController from 'api/controllers/StatementMetadataController';
 import BatchDeleteController from 'api/controllers/BatchDeleteController';
-import RequestAppAccessController from 'api/controllers/RequestAppAccessController';
 
-// MODELS
+// REST
 import LRS from 'lib/models/lrs';
 import Client from 'lib/models/client';
 import User from 'lib/models/user';
@@ -51,24 +58,14 @@ import PersonaAttribute from 'lib/models/personaAttribute';
 import PersonasImport from 'lib/models/personasImport';
 import PersonasImportTemplate from 'lib/models/personasImportTemplate';
 import SiteSettings from 'lib/models/siteSettings';
-import BatchDelete from 'lib/models/batchDelete';
-
-// REST
 import personaRESTHandler from 'api/routes/personas/personaRESTHandler';
 import personaIdentifierRESTHandler from 'api/routes/personas/personaIdentifierRESTHandler';
 import UserOrganisationsRouter from 'api/routes/userOrganisations/router';
 import UserOrganisationSettingsRouter from 'api/routes/userOrganisationSettings/router';
-
-// CONSTANTS
+import BatchDelete from 'lib/models/batchDelete';
+import getOrgFromAuthInfo from 'lib/services/auth/authInfoSelectors/getOrgFromAuthInfo';
+import { updateStatementCountsInOrg } from 'lib/services/lrs';
 import * as routes from 'lib/constants/routes';
-import { SITE_ADMIN } from 'lib/constants/scopes';
-import {
-  GOOGLE_AUTH_OPTIONS,
-  DEFAULT_PASSPORT_OPTIONS,
-  RESTIFY_DEFAULTS,
-  setNoCacheHeaders,
-  checkOrg,
-} from 'lib/constants/auth';
 
 const router = new express.Router();
 router.use(setNoCacheHeaders);
@@ -117,22 +114,9 @@ router.get(
   AuthController.clientInfo
 );
 
-router.get(
-  routes.OAUTH2_FAILED,
-  (request, response) => {
-    response.send('Authorization failed');
-  },
-);
-
 router.post(
   routes.OAUTH2_TOKEN,
   AuthController.issueOAuth2AccessToken
-);
-
-router.post(
-  routes.REQUEST_APP_ACCESS,
-  passport.authenticate('jwt', DEFAULT_PASSPORT_OPTIONS),
-  RequestAppAccessController.requestAppAccess,
 );
 
 /**
@@ -143,26 +127,10 @@ if (process.env.GOOGLE_ENABLED) {
     routes.AUTH_JWT_GOOGLE,
     passport.authenticate('google', GOOGLE_AUTH_OPTIONS)
   );
-
   router.get(
     routes.AUTH_JWT_GOOGLE_CALLBACK,
-    (request, response, next) => {
-      passport.authenticate(
-        'google',
-        DEFAULT_PASSPORT_OPTIONS,
-        (error, user, info) => {
-          const defaultErrorMessage = 'Something bad happened';
-
-          if (!user) {
-            response.redirect(`/api${routes.OAUTH2_FAILED}?error=${get(info, 'message', defaultErrorMessage)}`);
-
-            return;
-          }
-
-          AuthController.googleSuccess(user, response);
-        },
-      )(request, response, next);
-    },
+    passport.authenticate('google', DEFAULT_PASSPORT_OPTIONS),
+    AuthController.googleSuccess
   );
 }
 
@@ -213,12 +181,6 @@ router.get(
   routes.IMPORTPERSONASERROR,
   passport.authenticate(['jwt', 'jwt-cookie', 'clientBasic'], DEFAULT_PASSPORT_OPTIONS),
   ImportPersonasController.importPersonasError
-);
-
-router.post(
-  routes.UPLOADJSONPERSONA,
-  passport.authenticate(['jwt', 'jwt-cookie', 'clientBasic'], DEFAULT_PASSPORT_OPTIONS),
-  ImportPersonasController.uploadJsonPersona
 );
 
 /**
@@ -380,15 +342,26 @@ restify.serve(router, Statement, {
       return res.send('No ID sent', 400);
     }
     next();
+    return;
   },
   preUpdate: (req, res) => res.sendStatus(405),
+  postDelete: (req, _, next) => {
+    // Update LRS.statementCount
+    const authInfo = getAuthFromRequest(req);
+    const organisationId = getOrgFromAuthInfo(authInfo);
+    updateStatementCountsInOrg(organisationId)
+      .then(() => next())
+      .catch(err => next(err));
+  },
 });
 restify.serve(router, StatementForwarding);
 restify.serve(router, QueryBuilderCache);
 restify.serve(router, QueryBuilderCacheValue);
 restify.serve(router, Role);
 restify.serve(router, PersonaAttribute, {
-  preDelete: async (req, res, next) => next(),
+  preDelete: async (req, res, next) => {
+    return next();
+  },
 });
 restify.serve(router, PersonasImport);
 restify.serve(router, PersonasImportTemplate);

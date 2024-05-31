@@ -1,8 +1,10 @@
 import React from 'react';
 import { withProps, compose } from 'recompose';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { withModel } from 'ui/utils/hocs';
 import TypeEditor from './TypeEditor';
 import TemplateCardList from './TemplateCardList';
+import styles from './styles.css';
 
 const NewVisualisation = ({
   model,
@@ -29,4 +31,5 @@ export default compose(
     id: props.visualisationModel.get('_id'),
   })),
   withModel,
+  withStyles(styles),
 )(NewVisualisation);

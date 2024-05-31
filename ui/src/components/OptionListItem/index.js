@@ -3,61 +3,11 @@ import PropTypes from 'prop-types';
 import { Map } from 'immutable';
 import tooltipFactory from 'react-toolbox/lib/tooltip';
 import MaterialLink from 'react-toolbox/lib/link';
-import styled from 'styled-components';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import { omitBy, isFunction } from 'lodash';
+import styles from './styles.css';
 
-const ButtonWrapper = styled.div`
-  display: flex;
-  align-items: center;
-
-  a {
-    padding: 4px;
-    color: #ccc;
-
-    &:hover {
-      color: #F5AB35;
-    }
-  }
-`;
-
-const LinkWrapper = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  height: 36px;
-  width: 100%;
-  padding: 0 8px;
-
-  &:hover {
-    text-decoration: none;
-    background: #eee;
-  }
-`;
-
-const TextWrapper = styled.div`
-  flex-grow: 1;
-  display: flex;
-  align-content: center;
-  min-width: 0;
-
-  abbr {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  a {
-    text-decoration: none;
-    min-width: 0;
-    color: #000;
-  }
-`;
-
-const tooltipClassName = 'm-tooltip';
-
-const StyledTooltipLink = styled(tooltipFactory(MaterialLink))`
-  .${tooltipClassName} {
-    word-break: break-all;
-  }
-`;
+const TooltipLink = tooltipFactory(MaterialLink);
 
 class OptionListItem extends Component {
   static propTypes = {
@@ -114,47 +64,37 @@ class OptionListItem extends Component {
   }
 
   renderText = () => {
-    if (this.state.confirmDelete) {
-      return <MaterialLink label="Are you sure?" />;
-    }
-
+    if (this.state.confirmDelete) return <MaterialLink label="Are you sure?" />;
     const { label, tooltip, target, rel, href, icon } = this.props;
     const linkProps = {
       label,
+      theme: omitBy(styles, isFunction),
       target,
       rel,
       href,
       icon
     };
 
-    if (tooltip) {
-      return (
-        <StyledTooltipLink
-          className={tooltipClassName}
-          {...linkProps}
-          tooltip={tooltip} />
-      );
-    }
-
+    if (tooltip) return <TooltipLink {...linkProps} tooltip={tooltip} />;
     return <MaterialLink {...linkProps} />;
-  };
+  }
 
   renderButtons = () => {
     if (this.state.confirmDelete) {
       return (
-        <ButtonWrapper>
+        <div className={styles.buttonWrapper}>
           <a onClick={this.onConfirmDelete}>
             <i className="ion-checkmark-round" />
           </a>
           <a onClick={this.onCancelDelete}>
             <i className="ion-close-round" />
           </a>
-        </ButtonWrapper>
+        </div>
       );
     }
 
     return (
-      <ButtonWrapper>
+      <div className={styles.buttonWrapper}>
         { this.props.onEdit &&
           <a onClick={this.onEdit} >
             <i className="ion-edit" />
@@ -165,18 +105,18 @@ class OptionListItem extends Component {
             <i className="ion-trash-b" />
           </a>
         }
-      </ButtonWrapper>
+      </div>
     );
   }
 
   render = () => (
-    <LinkWrapper>
-      <TextWrapper onClick={this.onClick}>
+    <div className={styles.linkWrapper}>
+      <div className={styles.textWrapper} onClick={this.onClick}>
         {this.renderText()}
-      </TextWrapper>
+      </div>
       {this.renderButtons()}
-    </LinkWrapper>
+    </div>
   );
 }
 
-export default OptionListItem;
+export default withStyles(styles)(OptionListItem);
